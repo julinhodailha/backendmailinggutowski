@@ -3,303 +3,613 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gutowski · Mailing System</title>
+<title>Gutowski · Mailing System v2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#0a0a0f;--surface:#111118;--surface2:#16161f;--surface3:#1c1c28;
-  --border:#1e1e2e;--border2:#252538;
-  --gold:#c9a84c;--gold2:#e8c96a;--gold-dim:rgba(201,168,76,.13);--gold-glow:rgba(201,168,76,.05);
-  --text:#e8e8f0;--text2:#9090a8;--text3:#5a5a72;
-  --green:#22c55e;--green-dim:rgba(34,197,94,.12);
-  --red:#ef4444;--red-dim:rgba(239,68,68,.12);
-  --blue:#3b82f6;--blue-dim:rgba(59,130,246,.12);
-  --yellow:#eab308;--yellow-dim:rgba(234,179,8,.12);
-  --purple:#a855f7;--purple-dim:rgba(168,85,247,.12);
-  --sc:#0ea5e9;--sc-dim:rgba(14,165,233,.12);
-  --pr:#10b981;--pr-dim:rgba(16,185,129,.12);
-  --sp:#f97316;--sp-dim:rgba(249,115,22,.12);
-  --r:10px;--font:'Sora',sans-serif;--mono:'DM Mono',monospace;
+  /* ─── WHITE & GOLD THEME ─── */
+  --bg:       #faf9f5;
+  --surface:  #ffffff;
+  --surface2: #f5f3ec;
+  --surface3: #edeae0;
+  --border:   #e4e0d4;
+  --border2:  #d8d3c4;
+  --gold:     #b8952e;
+  --gold2:    #d4ab42;
+  --gold-dim: rgba(184,149,46,.10);
+  --gold-glow:rgba(184,149,46,.06);
+  --text:     #1c1a12;
+  --text2:    #4a4636;
+  --text3:    #8a8470;
+  --green:    #16a34a;
+  --green-dim:rgba(22,163,74,.10);
+  --red:      #dc2626;
+  --red-dim:  rgba(220,38,38,.10);
+  --blue:     #2563eb;
+  --blue-dim: rgba(37,99,235,.10);
+  --yellow:   #ca8a04;
+  --yellow-dim:rgba(202,138,4,.10);
+  --purple:   #9333ea;
+  --purple-dim:rgba(147,51,234,.10);
+  --sc:  #0284c7; --sc-dim: rgba(2,132,199,.10);
+  --pr:  #059669; --pr-dim: rgba(5,150,105,.10);
+  --sp:  #ea580c; --sp-dim: rgba(234,88,12,.10);
+  --r:   10px;
+  --font:'Sora',sans-serif;
+  --mono:'DM Mono',monospace;
+  --display:'Cormorant Garamond',serif;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.06), 0 0 0 1px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.04);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.12), 0 0 0 1px rgba(0,0,0,.04);
 }
+
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
-/* ── LOGIN ── */
-#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative}
-#login-screen::before{content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(201,168,76,.07) 0%,transparent 70%);pointer-events:none}
-.login-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;
-  padding:52px 46px;width:440px;max-width:93vw;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.6)}
-.login-card::before{content:'';position:absolute;top:0;left:15%;right:15%;height:1px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.login-logo{text-align:center;margin-bottom:28px}
-.login-logo .brand{font-size:24px;font-weight:700;letter-spacing:-.5px}
-.login-logo .brand span{color:var(--gold)}
-.login-logo .sub{font-size:11px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px}
-.greeting{background:var(--gold-glow);border:1px solid rgba(201,168,76,.18);border-radius:8px;
-  padding:12px 16px;font-size:13px;color:var(--gold2);text-align:center;margin-bottom:28px;line-height:1.6}
-.form-group{margin-bottom:18px}
-.form-group label{display:block;font-size:10px;font-weight:700;letter-spacing:1.2px;
-  text-transform:uppercase;color:var(--text3);margin-bottom:7px}
-.form-group input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
-  padding:12px 16px;font-family:var(--font);font-size:14px;color:var(--text);outline:none;transition:border-color .2s}
-.form-group input:focus{border-color:var(--gold)}
+/* ─── AMBIENT BACKGROUND ─── */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -5%, rgba(184,149,46,.06) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 90% 80%, rgba(2,132,199,.03) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 0% 100%, rgba(184,149,46,.04) 0%, transparent 50%);
+}
+
+/* ─── LOGIN ─── */
+#login-screen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;position:relative;z-index:1;
+}
+.login-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:52px 46px;
+  width:430px;max-width:93vw;
+  position:relative;
+  box-shadow:var(--shadow-lg), 0 0 0 4px rgba(184,149,46,.06);
+  animation:fadeUp .5s ease both;
+}
+.login-card::before{
+  content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.login-card::after{
+  content:'';position:absolute;inset:0;border-radius:20px;pointer-events:none;
+  background:radial-gradient(ellipse 80% 40% at 50% 0%, rgba(184,149,46,.04) 0%, transparent 60%);
+}
+
+.login-logo{text-align:center;margin-bottom:32px}
+.login-logo .wordmark{
+  font-family:var(--display);
+  font-size:28px;font-weight:600;letter-spacing:.5px;
+  color:var(--text);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.login-logo .wordmark .sep{color:var(--gold);font-style:normal}
+.login-logo .sub{
+  font-size:10px;font-weight:600;letter-spacing:2px;
+  text-transform:uppercase;color:var(--text3);margin-top:8px;
+}
+.login-logo .ver{
+  display:inline-block;
+  background:var(--gold-dim);border:1px solid rgba(184,149,46,.3);
+  color:var(--gold);font-size:9px;font-weight:700;letter-spacing:1.8px;
+  padding:3px 10px;border-radius:99px;margin-top:10px;
+  text-transform:uppercase;font-family:var(--mono);
+}
+
+.greeting{
+  background:var(--gold-glow);
+  border:1px solid rgba(184,149,46,.18);
+  border-radius:10px;
+  padding:13px 18px;
+  font-size:15px;color:rgba(120,90,20,.9);
+  text-align:center;margin-bottom:30px;line-height:1.6;
+  font-style:italic;font-family:var(--display);
+}
+
+.form-group{margin-bottom:20px}
+.form-group label{
+  display:block;font-size:9.5px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--text3);margin-bottom:8px;
+}
+.form-group input{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:9px;padding:13px 16px;
+  font-family:var(--font);font-size:14px;color:var(--text);
+  outline:none;transition:border-color .2s, box-shadow .2s;
+}
+.form-group input:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px var(--gold-dim);
+  background:var(--surface);
+}
 .form-group input::placeholder{color:var(--text3)}
-.btn-primary{background:var(--gold);color:#08080e;border:none;border-radius:8px;
-  padding:13px 26px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
-  transition:all .2s;display:inline-flex;align-items:center;gap:7px}
-.btn-primary:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 8px 20px rgba(201,168,76,.25)}
-.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
-.btn-primary.full{width:100%;justify-content:center}
-.login-error{background:var(--red-dim);border:1px solid rgba(239,68,68,.3);border-radius:6px;
-  padding:10px 14px;font-size:13px;color:var(--red);margin-top:12px;display:none;text-align:center}
 
-/* ── APP ── */
-#app{display:none;min-height:100vh}
-.topbar{height:54px;background:var(--surface);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;padding:0 24px;
-  position:sticky;top:0;z-index:200}
-.topbar-brand{font-size:15px;font-weight:700;letter-spacing:-.3px}
-.topbar-brand span{color:var(--gold)}
+.btn-login{
+  width:100%;background:var(--gold);color:#fff;
+  border:none;border-radius:9px;padding:15px;
+  font-family:var(--font);font-size:13.5px;font-weight:700;
+  cursor:pointer;transition:all .2s;margin-top:6px;letter-spacing:.5px;
+  position:relative;overflow:hidden;
+  box-shadow:0 4px 16px rgba(184,149,46,.3);
+}
+.btn-login::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg, rgba(255,255,255,.18) 0%, transparent 60%);
+  pointer-events:none;
+}
+.btn-login:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(184,149,46,.35)}
+.btn-login:active{transform:translateY(0)}
+.btn-login:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.login-error{
+  background:var(--red-dim);border:1px solid rgba(220,38,38,.25);
+  border-radius:7px;padding:10px 14px;
+  font-size:12.5px;color:var(--red);margin-top:12px;display:none;text-align:center;
+}
+
+/* ─── TOPBAR ─── */
+#app{display:none;min-height:100vh;position:relative;z-index:1}
+.topbar{
+  height:56px;background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;position:sticky;top:0;z-index:200;
+  box-shadow:0 1px 0 var(--border), 0 4px 20px rgba(0,0,0,.05);
+}
+.topbar-brand{display:flex;align-items:center;gap:12px}
+.topbar-brand .wordmark{
+  font-family:var(--display);
+  font-size:18px;font-weight:600;letter-spacing:.3px;color:var(--text);
+  display:flex;align-items:center;gap:8px;
+}
+.topbar-brand .wordmark .sep{color:var(--gold)}
+.topbar-brand .ver{
+  font-size:9px;font-weight:700;color:var(--text3);
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:5px;padding:2px 8px;letter-spacing:1px;
+  text-transform:uppercase;font-family:var(--mono);
+}
 .topbar-right{display:flex;align-items:center;gap:10px}
-.topbar-user{font-size:12px;color:var(--text2);background:var(--surface2);
-  border:1px solid var(--border);border-radius:6px;padding:5px 12px}
-.btn-sm{background:transparent;border:1px solid var(--border2);border-radius:6px;
-  padding:5px 12px;font-family:var(--font);font-size:12px;color:var(--text3);cursor:pointer;transition:all .2s}
-.btn-sm:hover{border-color:var(--red);color:var(--red)}
-.nav{display:flex;gap:2px;background:var(--surface);border-bottom:1px solid var(--border);
-  padding:0 24px;overflow-x:auto}
-.nav-tab{padding:14px 18px;font-size:13px;font-weight:500;color:var(--text3);
-  cursor:pointer;border:none;background:transparent;font-family:var(--font);
-  border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.topbar-user{
+  font-size:11.5px;color:var(--text2);
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:7px;padding:5px 14px;
+}
+.btn-logout{
+  background:transparent;border:1px solid var(--border2);
+  border-radius:7px;padding:5px 14px;
+  font-family:var(--font);font-size:11.5px;color:var(--text3);
+  cursor:pointer;transition:all .2s;
+}
+.btn-logout:hover{border-color:var(--red);color:var(--red)}
+
+/* ─── NAV TABS ─── */
+.nav{
+  display:flex;gap:0;background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;overflow-x:auto;
+}
+.nav-tab{
+  padding:15px 20px;font-size:12.5px;font-weight:500;color:var(--text3);
+  cursor:pointer;border:none;background:transparent;
+  font-family:var(--font);border-bottom:2px solid transparent;
+  transition:all .2s;white-space:nowrap;letter-spacing:.1px;
+}
 .nav-tab:hover{color:var(--text2)}
 .nav-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
-.main{max-width:1400px;margin:0 auto;padding:28px 24px}
+
+/* ─── MAIN ─── */
+.main{max-width:1400px;margin:0 auto;padding:32px 28px}
+
+/* ─── STATE SELECTOR ─── */
+.state-bar{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap}
+.state-btn{
+  display:flex;align-items:center;gap:8px;padding:9px 18px;
+  border-radius:9px;border:1px solid var(--border);background:var(--surface);
+  font-family:var(--font);font-size:12.5px;font-weight:600;
+  cursor:pointer;transition:all .2s;color:var(--text2);
+  box-shadow:var(--shadow-sm);
+}
+.state-btn .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.state-btn.sc .dot{background:var(--sc)}
+.state-btn.pr .dot{background:var(--pr)}
+.state-btn.sp .dot{background:var(--sp)}
+.state-btn.all .dot{background:linear-gradient(135deg,var(--sc),var(--pr))}
+.state-btn:hover{border-color:var(--gold);color:var(--text);box-shadow:var(--shadow-md)}
+.state-btn.active.sc{background:var(--sc-dim);border-color:rgba(2,132,199,.3);color:var(--sc)}
+.state-btn.active.pr{background:var(--pr-dim);border-color:rgba(5,150,105,.3);color:var(--pr)}
+.state-btn.active.sp{background:var(--sp-dim);border-color:rgba(234,88,12,.3);color:var(--sp)}
+.state-btn.active.all{background:var(--gold-dim);border-color:rgba(184,149,46,.3);color:var(--gold)}
+.state-btn .count{font-family:var(--mono);font-size:10.5px;opacity:.65}
+
+/* ─── SECTION ─── */
 .section{display:none}.section.active{display:block}
-.section-header{margin-bottom:22px}
-.section-header h2{font-size:20px;font-weight:600;letter-spacing:-.3px;margin-bottom:4px}
+.section-header{margin-bottom:24px}
+.section-header h2{
+  font-size:20px;font-weight:600;letter-spacing:-.4px;margin-bottom:5px;
+  background:linear-gradient(135deg, var(--text) 40%, var(--gold) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  display:inline-block;
+}
 .section-header p{font-size:13px;color:var(--text2)}
 
-/* ── STATE BAR ── */
-.state-bar{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
-.state-btn{display:flex;align-items:center;gap:7px;padding:8px 16px;border-radius:8px;
-  border:1px solid var(--border2);background:var(--surface);font-family:var(--font);
-  font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--text2)}
-.state-btn:hover{border-color:var(--gold);color:var(--text)}
-.sdot{width:7px;height:7px;border-radius:50%}
-.state-btn.active.sc{background:var(--sc-dim);border-color:rgba(14,165,233,.35);color:var(--sc)}
-.state-btn.active.pr{background:var(--pr-dim);border-color:rgba(16,185,129,.35);color:var(--pr)}
-.state-btn.active.sp{background:var(--sp-dim);border-color:rgba(249,115,22,.35);color:var(--sp)}
-.state-btn.active.all{background:var(--gold-dim);border-color:rgba(201,168,76,.35);color:var(--gold)}
-.scnt{font-family:var(--mono);font-size:10px;opacity:.7}
-
-/* ── UPLOAD ── */
-.upload-zone{border:2px dashed var(--border2);border-radius:12px;padding:44px 32px;
-  text-align:center;cursor:pointer;transition:all .25s;background:var(--surface);position:relative}
-.upload-zone:hover,.upload-zone.drag-over{border-color:var(--gold);background:var(--gold-glow)}
+/* ─── UPLOAD ─── */
+.upload-zone{
+  border:2px dashed var(--border2);border-radius:14px;
+  padding:52px 32px;text-align:center;cursor:pointer;
+  transition:all .25s;background:var(--surface);
+  position:relative;overflow:hidden;
+  box-shadow:var(--shadow-sm);
+}
+.upload-zone::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 50% at 50% 100%, rgba(184,149,46,.03) 0%, transparent 60%);
+}
+.upload-zone:hover,.upload-zone.drag-over{
+  border-color:var(--gold);
+  background:linear-gradient(180deg, var(--surface) 0%, rgba(184,149,46,.04) 100%);
+  box-shadow:0 0 0 1px rgba(184,149,46,.15), var(--shadow-md);
+}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.upload-icon{font-size:36px;margin-bottom:10px}
-.upload-zone h3{font-size:16px;font-weight:600;margin-bottom:6px}
+.upload-icon{font-size:40px;margin-bottom:12px;display:block}
+.upload-zone h3{font-size:16px;font-weight:600;margin-bottom:6px;color:var(--text)}
 .upload-zone p{font-size:13px;color:var(--text2)}
-.hint{margin-top:8px;font-size:11px;color:var(--text3);font-family:var(--mono)}
-.assign-row{display:flex;align-items:center;gap:10px;margin:14px 0;
-  background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;flex-wrap:wrap}
+.upload-zone .hint{
+  margin-top:12px;font-size:11px;color:var(--text3);
+  font-family:var(--mono);letter-spacing:.5px;
+}
+
+.assign-row{
+  display:flex;align-items:center;gap:10px;margin-top:16px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:9px;padding:12px 18px;
+  box-shadow:var(--shadow-sm);
+}
 .assign-row label{font-size:12px;color:var(--text2);font-weight:600}
-.sel{background:var(--surface2);border:1px solid var(--border2);border-radius:6px;
-  padding:7px 12px;font-family:var(--font);font-size:13px;color:var(--text);outline:none;cursor:pointer}
-.sel:focus{border-color:var(--gold)}
-.files-list{margin-top:14px;display:flex;flex-direction:column;gap:8px}
-.file-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;
-  padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;
-  animation:fadeUp .25s ease;flex-wrap:wrap}
-.file-item-left{display:flex;align-items:center;gap:10px}
-.fname{font-size:13px;font-weight:500}
-.fmeta{font-size:11px;color:var(--text3);font-family:var(--mono)}
-.fbadge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px}
-.fstatus{font-size:11px;padding:3px 10px;border-radius:99px;font-weight:600}
-.fstatus.ok{background:var(--green-dim);color:var(--green)}
-.fstatus.pending{background:var(--yellow-dim);color:var(--yellow)}
-.fstatus.error{background:var(--red-dim);color:var(--red)}
-.fstatus.loading{background:var(--blue-dim);color:var(--blue)}
+.state-select{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:7px;padding:6px 12px;
+  font-family:var(--font);font-size:12.5px;color:var(--text);
+  outline:none;cursor:pointer;transition:border-color .2s;
+}
+.state-select:focus{border-color:var(--gold)}
 
-/* ── PROGRESS ── */
-.prog-wrap{margin-top:20px}
-.prog-step{display:flex;align-items:center;gap:12px;padding:11px 16px;border-radius:8px;
-  background:var(--surface);border:1px solid var(--border);font-size:13px;margin-bottom:8px;transition:all .3s}
-.prog-step.running{border-color:var(--gold);background:var(--gold-glow)}
-.prog-step.done{border-color:rgba(34,197,94,.3);background:var(--green-dim);color:var(--green)}
-.prog-step.waiting{color:var(--text3)}
-.sicon{width:20px;text-align:center;font-size:14px}
+.files-list{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.file-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:9px;
+  padding:12px 18px;display:flex;align-items:center;
+  justify-content:space-between;gap:12px;
+  animation:fadeUp .25s ease;
+  transition:border-color .2s;
+  box-shadow:var(--shadow-sm);
+}
+.file-item:hover{border-color:var(--gold)}
+.file-item-left{display:flex;align-items:center;gap:12px}
+.file-name{font-size:13px;font-weight:500;color:var(--text)}
+.file-meta{font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:2px}
+.file-state-badge{
+  font-size:10.5px;font-weight:700;padding:3px 10px;
+  border-radius:99px;letter-spacing:.5px;
+}
+.badge-sc{background:var(--sc-dim);color:var(--sc)}
+.badge-pr{background:var(--pr-dim);color:var(--pr)}
+.badge-sp{background:var(--sp-dim);color:var(--sp)}
+.badge-auto{background:var(--gold-dim);color:var(--gold)}
+.file-status{font-size:10.5px;padding:3px 10px;border-radius:99px;font-weight:700;letter-spacing:.4px}
+.file-status.ok{background:var(--green-dim);color:var(--green)}
+.file-status.pending{background:var(--yellow-dim);color:var(--yellow)}
 
-/* ── STATS ── */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:14px;margin-bottom:24px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-  padding:18px 20px;position:relative;overflow:hidden}
+.btn-process{
+  background:var(--gold);color:#fff;border:none;border-radius:9px;
+  padding:12px 28px;font-family:var(--font);font-size:13.5px;font-weight:700;
+  cursor:pointer;transition:all .2s;margin-top:20px;
+  display:inline-flex;align-items:center;gap:8px;letter-spacing:.3px;
+  position:relative;overflow:hidden;
+  box-shadow:0 4px 16px rgba(184,149,46,.25);
+}
+.btn-process::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg, rgba(255,255,255,.18) 0%, transparent 50%);
+  pointer-events:none;
+}
+.btn-process:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(184,149,46,.3)}
+.btn-process:active{transform:translateY(0)}
+.btn-process:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ─── PROGRESS ─── */
+.progress-wrap{margin-top:24px;display:none}
+.progress-step{
+  display:flex;align-items:center;gap:14px;padding:12px 18px;
+  border-radius:9px;background:var(--surface);border:1px solid var(--border);
+  font-size:13px;margin-bottom:8px;transition:all .3s;color:var(--text2);
+  box-shadow:var(--shadow-sm);
+}
+.progress-step.running{border-color:rgba(184,149,46,.4);background:var(--gold-glow);color:var(--gold)}
+.progress-step.done{border-color:rgba(22,163,74,.3);background:var(--green-dim);color:var(--green)}
+.progress-step.waiting{color:var(--text3)}
+.step-icon{font-size:14px;width:20px;text-align:center;flex-shrink:0}
+
+/* ─── STATS GRID ─── */
+.stats-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:14px;margin-bottom:28px;
+}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:20px 22px;position:relative;overflow:hidden;
+  transition:border-color .2s, transform .2s, box-shadow .2s;
+  animation:fadeUp .4s ease both;
+  box-shadow:var(--shadow-sm);
+}
+.stat-card:hover{transform:translateY(-2px);border-color:var(--border2);box-shadow:var(--shadow-md)}
 .stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.stat-card.gold::after{background:var(--gold)}
+.stat-card.gold::after{background:linear-gradient(90deg, var(--gold), var(--gold2))}
 .stat-card.green::after{background:var(--green)}
 .stat-card.red::after{background:var(--red)}
 .stat-card.blue::after{background:var(--blue)}
 .stat-card.yellow::after{background:var(--yellow)}
-.stat-card.sc-c::after{background:var(--sc)}
-.stat-card.pr-c::after{background:var(--pr)}
-.stat-card.sp-c::after{background:var(--sp)}
-.slabel{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
-.svalue{font-size:28px;font-weight:700;letter-spacing:-1px;font-family:var(--mono)}
-.ssub{font-size:11px;color:var(--text3);margin-top:3px}
+.stat-card.sc::after{background:var(--sc)}
+.stat-card.pr::after{background:var(--pr)}
+.stat-card.sp::after{background:var(--sp)}
+.stat-card.gold::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(184,149,46,.04) 0%,transparent 70%);pointer-events:none}
+.stat-label{font-size:9.5px;color:var(--text3);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;font-weight:700}
+.stat-value{font-size:30px;font-weight:700;letter-spacing:-1.5px;font-family:var(--mono);line-height:1;color:var(--text)}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:5px}
 
-/* ── TABLE ── */
-.tcontrols{display:flex;align-items:center;justify-content:space-between;
-  gap:10px;margin-bottom:14px;flex-wrap:wrap}
-.search-input{background:var(--surface);border:1px solid var(--border2);border-radius:8px;
-  padding:9px 14px;font-family:var(--font);font-size:13px;color:var(--text);
-  width:260px;outline:none;transition:border-color .2s}
-.search-input:focus{border-color:var(--gold)}
+/* ─── COMPARISON ─── */
+.compare-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:18px;margin-bottom:28px;
+}
+.compare-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:24px;position:relative;overflow:hidden;
+  transition:border-color .2s;
+  box-shadow:var(--shadow-sm);
+}
+.compare-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px}
+.compare-card.sc::before{background:var(--sc)}
+.compare-card.pr::before{background:var(--pr)}
+.compare-card.sp::before{background:var(--sp)}
+.compare-card h3{
+  font-size:11px;font-weight:700;letter-spacing:1.2px;
+  text-transform:uppercase;margin-bottom:18px;
+}
+.compare-card.sc h3{color:var(--sc)}
+.compare-card.pr h3{color:var(--pr)}
+.compare-card.sp h3{color:var(--sp)}
+.compare-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;
+}
+.compare-row:last-of-type{border-bottom:none}
+.compare-row .lbl{color:var(--text2)}
+.compare-row .val{font-family:var(--mono);font-weight:600;color:var(--text)}
+
+.bar-row{margin-top:14px}
+.bar-label{display:flex;justify-content:space-between;font-size:10.5px;color:var(--text3);margin-bottom:6px}
+.bar-track{height:5px;background:var(--border2);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;border-radius:99px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.bar-fill.sc{background:var(--sc)}
+.bar-fill.pr{background:var(--pr)}
+.bar-fill.sp{background:var(--sp)}
+
+/* ─── TABLE ─── */
+.table-controls{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;margin-bottom:14px;flex-wrap:wrap;
+}
+.search-input{
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:9px 16px;font-family:var(--font);font-size:13px;color:var(--text);
+  width:280px;outline:none;transition:border-color .2s, box-shadow .2s;
+  box-shadow:var(--shadow-sm);
+}
+.search-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
 .search-input::placeholder{color:var(--text3)}
-.twrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
-.tscroll{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:800px}
+.filter-select{
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:8px 12px;font-family:var(--font);font-size:12px;
+  color:var(--text2);outline:none;cursor:pointer;transition:border-color .2s;
+  box-shadow:var(--shadow-sm);
+}
+.filter-select:focus{border-color:var(--gold)}
+.table-wrapper{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;
+  box-shadow:var(--shadow-sm);
+}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:750px}
 thead tr{border-bottom:1px solid var(--border)}
-th{padding:11px 14px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;
-  letter-spacing:.8px;text-align:left;background:var(--surface2);white-space:nowrap;cursor:pointer;user-select:none}
-th:hover{color:var(--text2)}
-td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+th{
+  padding:11px 16px;font-size:9.5px;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:1px;text-align:left;
+  background:var(--surface2);white-space:nowrap;cursor:pointer;user-select:none;
+  transition:color .15s;
+}
+th:hover{color:var(--gold)}
+td{
+  padding:11px 16px;font-size:13px;border-bottom:1px solid var(--border);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;
+  color:var(--text2);
+}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:var(--surface2)}
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700}
-.b-green{background:var(--green-dim);color:var(--green)}
-.b-red{background:var(--red-dim);color:var(--red)}
-.b-yellow{background:var(--yellow-dim);color:var(--yellow)}
-.b-blue{background:var(--blue-dim);color:var(--blue)}
-.b-gold{background:var(--gold-dim);color:var(--gold)}
-.b-purple{background:var(--purple-dim);color:var(--purple)}
-.b-gray{background:var(--surface2);color:var(--text3);border:1px solid var(--border2)}
-.score-bar{display:flex;align-items:center;gap:7px}
-.strack{width:50px;height:4px;background:var(--border2);border-radius:99px;overflow:hidden}
-.sfill{height:100%;border-radius:99px}
-.snum{font-size:11px;font-family:var(--mono);color:var(--text2)}
-.pagination{display:flex;align-items:center;justify-content:space-between;
-  padding:12px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--text2)}
+tr:hover td{background:rgba(184,149,46,.04)}
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;font-size:10px;font-weight:700;letter-spacing:.3px}
+.badge-green{background:var(--green-dim);color:var(--green)}
+.badge-red{background:var(--red-dim);color:var(--red)}
+.badge-yellow{background:var(--yellow-dim);color:var(--yellow)}
+.badge-blue{background:var(--blue-dim);color:var(--blue)}
+.badge-gold{background:var(--gold-dim);color:var(--gold)}
+.state-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.score-bar{display:flex;align-items:center;gap:8px}
+.score-track{width:56px;height:4px;background:var(--border2);border-radius:99px;overflow:hidden}
+.score-fill{height:100%;border-radius:99px;transition:width .6s ease}
+.score-num{font-size:11px;font-family:var(--mono);color:var(--text2)}
+
+/* pagination */
+.pagination{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;border-top:1px solid var(--border);
+  font-size:12px;color:var(--text2);
+}
 .page-btns{display:flex;gap:4px}
-.pbtn{background:transparent;border:1px solid var(--border2);border-radius:5px;
-  padding:4px 10px;font-family:var(--font);font-size:11px;color:var(--text3);cursor:pointer;transition:all .15s}
-.pbtn:hover{border-color:var(--gold);color:var(--gold)}
-.pbtn.active{background:var(--gold-dim);border-color:rgba(201,168,76,.3);color:var(--gold)}
-.pbtn:disabled{opacity:.3;cursor:not-allowed}
+.page-btn{
+  background:var(--surface2);border:1px solid var(--border);border-radius:6px;
+  padding:4px 11px;font-family:var(--mono);font-size:11px;color:var(--text3);
+  cursor:pointer;transition:all .15s;
+}
+.page-btn:hover{border-color:var(--gold);color:var(--gold)}
+.page-btn.active{background:var(--gold-dim);border-color:rgba(184,149,46,.35);color:var(--gold)}
+.page-btn:disabled{opacity:.3;cursor:not-allowed}
 
-/* ── ACTION BTNS ── */
-.act-btns{display:flex;gap:5px}
-.act-btn{border:none;border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;
-  font-family:var(--font);font-weight:600;transition:all .15s;white-space:nowrap}
-.act-wpp{background:rgba(34,197,94,.15);color:var(--green)}
-.act-wpp:hover{background:rgba(34,197,94,.25)}
-.act-email{background:rgba(59,130,246,.15);color:var(--blue)}
-.act-email:hover{background:rgba(59,130,246,.25)}
-.act-status{background:var(--gold-dim);color:var(--gold)}
-.act-status:hover{background:rgba(201,168,76,.22)}
+/* ─── EXPORT ─── */
+.export-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:14px;margin-bottom:22px;
+}
+.export-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:24px 20px;cursor:pointer;transition:all .2s;text-align:center;
+  position:relative;overflow:hidden;
+  box-shadow:var(--shadow-sm);
+}
+.export-card::before{
+  content:'';position:absolute;top:0;left:20%;right:20%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(184,149,46,.25),transparent);
+}
+.export-card:hover{
+  border-color:var(--gold);
+  background:linear-gradient(180deg, var(--surface) 0%, var(--gold-glow) 100%);
+  transform:translateY(-3px);box-shadow:var(--shadow-md);
+}
+.export-card .icon{font-size:28px;margin-bottom:12px;display:block}
+.export-card h3{font-size:13.5px;font-weight:600;margin-bottom:5px;color:var(--text)}
+.export-card p{font-size:11.5px;color:var(--text2)}
 
-/* ── STATUS MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;
-  display:none;align-items:center;justify-content:center;padding:20px}
-.modal-overlay.open{display:flex}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;
-  padding:28px;width:480px;max-width:95vw;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.5)}
-.modal h3{font-size:16px;font-weight:600;margin-bottom:4px}
-.modal .sub{font-size:12px;color:var(--text2);margin-bottom:20px}
-.modal .close{position:absolute;top:16px;right:16px;background:transparent;border:none;
-  color:var(--text3);cursor:pointer;font-size:18px;line-height:1}
-.modal .close:hover{color:var(--text)}
-.status-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-.status-opt{border:1px solid var(--border2);border-radius:8px;padding:10px 14px;
-  cursor:pointer;transition:all .2s;background:transparent;font-family:var(--font);
-  font-size:13px;font-weight:600;text-align:left;color:var(--text2)}
-.status-opt:hover{border-color:var(--gold);color:var(--text)}
-.status-opt.selected{border-color:var(--gold);background:var(--gold-dim);color:var(--gold)}
-.status-opt.bom{border-color:rgba(34,197,94,.3)}
-.status-opt.bom.selected,.status-opt.bom:hover{border-color:var(--green);background:var(--green-dim);color:var(--green)}
-.status-opt.and{border-color:rgba(59,130,246,.3)}
-.status-opt.and.selected,.status-opt.and:hover{border-color:var(--blue);background:var(--blue-dim);color:var(--blue)}
-.status-opt.conv{border-color:rgba(168,85,247,.3)}
-.status-opt.conv.selected,.status-opt.conv:hover{border-color:var(--purple);background:var(--purple-dim);color:var(--purple)}
-.status-opt.nex{border-color:rgba(239,68,68,.3)}
-.status-opt.nex.selected,.status-opt.nex:hover{border-color:var(--red);background:var(--red-dim);color:var(--red)}
-.status-opt.sem{border-color:rgba(234,179,8,.3)}
-.status-opt.sem.selected,.status-opt.sem:hover{border-color:var(--yellow);background:var(--yellow-dim);color:var(--yellow)}
-.status-opt.desc{border-color:rgba(90,90,114,.3)}
-.status-opt.desc.selected,.status-opt.desc:hover{border-color:var(--text3);background:rgba(90,90,114,.1);color:var(--text3)}
-.note-input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
-  padding:10px 14px;font-family:var(--font);font-size:13px;color:var(--text);
-  outline:none;resize:vertical;min-height:72px;margin-bottom:14px}
-.note-input:focus{border-color:var(--gold)}
-.note-input::placeholder{color:var(--text3)}
+.export-preview-box{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:20px;margin-top:16px;display:none;
+  box-shadow:var(--shadow-sm);
+}
+.btn-secondary{
+  background:transparent;border:1px solid var(--border2);border-radius:8px;
+  padding:9px 18px;font-family:var(--font);font-size:13px;
+  color:var(--text2);cursor:pointer;transition:all .2s;
+}
+.btn-secondary:hover{border-color:var(--gold);color:var(--gold)}
 
-/* ── HISTORY ── */
-.history-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
-.history-item:last-child{border-bottom:none}
-.history-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);margin-top:4px;flex-shrink:0}
-.history-meta{font-size:11px;color:var(--text3);margin-top:2px}
+/* ─── WHATSAPP ─── */
+.wa-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+.wa-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;
+  box-shadow:var(--shadow-sm);
+}
+.wa-card-header{
+  padding:14px 18px;display:flex;align-items:center;
+  justify-content:space-between;
+}
+.wa-card-header.sc{background:var(--sc-dim);border-bottom:1px solid rgba(2,132,199,.2)}
+.wa-card-header.pr{background:var(--pr-dim);border-bottom:1px solid rgba(5,150,105,.2)}
+.wa-card-header.sp{background:var(--sp-dim);border-bottom:1px solid rgba(234,88,12,.2)}
+.wa-card-header h3{font-size:12.5px;font-weight:700;letter-spacing:.3px}
+.wa-card-header.sc h3{color:var(--sc)}
+.wa-card-header.pr h3{color:var(--pr)}
+.wa-card-header.sp h3{color:var(--sp)}
+.wa-card-body{padding:16px 18px}
+.wa-contact{border-bottom:1px solid var(--border);padding:11px 0;font-size:13px}
+.wa-contact:last-child{border-bottom:none}
+.wa-contact .cname{font-weight:600;margin-bottom:3px;color:var(--text)}
+.wa-contact .cphone{font-family:var(--mono);font-size:11px;color:var(--text2)}
+.wa-msg-box{
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  padding:12px 14px;margin-top:8px;
+  font-size:12px;color:var(--text2);line-height:1.65;
+  white-space:pre-wrap;font-family:var(--mono);
+}
+.btn-copy{
+  background:transparent;border:1px solid var(--border);border-radius:6px;
+  padding:4px 10px;font-family:var(--font);font-size:11px;color:var(--text3);
+  cursor:pointer;transition:all .15s;margin-top:6px;
+}
+.btn-copy:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
 
-/* ── IMPORT HISTORY ── */
-.import-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;
-  padding:16px 18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.import-info{display:flex;flex-direction:column;gap:3px}
-.import-name{font-size:14px;font-weight:600}
-.import-meta{font-size:11px;color:var(--text3);font-family:var(--mono)}
-.import-stats{display:flex;gap:10px;flex-wrap:wrap}
-
-/* ── MISC ── */
-@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* ─── MISC ─── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinning{display:inline-block;animation:spin 1s linear infinite}
-.empty-state{padding:60px 20px;text-align:center;color:var(--text3)}
-.empty-state .eicon{font-size:38px;margin-bottom:12px}
-.empty-state p{font-size:14px}
-.toast-container{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:7px}
-.toast{background:var(--surface2);border:1px solid var(--border);border-radius:8px;
-  padding:11px 18px;font-size:13px;animation:fadeUp .25s ease;max-width:340px;
-  box-shadow:0 8px 24px rgba(0,0,0,.4);display:flex;align-items:center;gap:8px}
-.toast.success{border-color:rgba(34,197,94,.4);color:var(--green)}
-.toast.error{border-color:rgba(239,68,68,.4);color:var(--red)}
-.toast.info{border-color:rgba(59,130,246,.4);color:var(--blue)}
-.loader{display:inline-block;width:14px;height:14px;border:2px solid rgba(201,168,76,.3);
-  border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin-right:6px}
+
+.empty-state{
+  padding:80px 20px;text-align:center;color:var(--text3);
+  animation:fadeUp .4s ease both;
+}
+.empty-state .icon{font-size:40px;margin-bottom:14px;display:block;opacity:.4}
+.empty-state p{font-size:14px;line-height:1.6}
+
+.toast-container{
+  position:fixed;bottom:24px;right:24px;z-index:9999;
+  display:flex;flex-direction:column;gap:8px;
+}
+.toast{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:9px;padding:12px 18px;font-size:13px;
+  animation:fadeUp .25s ease;max-width:340px;
+  box-shadow:var(--shadow-lg);
+  display:flex;align-items:center;gap:10px;color:var(--text);
+}
+.toast.success{border-color:rgba(22,163,74,.35);color:var(--green);background:#f0fdf4}
+.toast.error{border-color:rgba(220,38,38,.35);color:var(--red);background:#fef2f2}
+.toast.info{border-color:rgba(37,99,235,.35);color:var(--blue);background:#eff6ff}
+
 .tag-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-.tag-btn{padding:3px 11px;border-radius:99px;font-size:11px;font-weight:600;cursor:pointer;
-  border:1px solid var(--border2);background:transparent;color:var(--text3);font-family:var(--font);transition:all .15s}
+.tag-btn{
+  padding:4px 12px;border-radius:99px;font-size:11px;font-weight:600;cursor:pointer;
+  border:1px solid var(--border);background:var(--surface);color:var(--text3);
+  font-family:var(--font);transition:all .15s;
+  box-shadow:var(--shadow-sm);
+}
 .tag-btn:hover{border-color:var(--gold);color:var(--gold)}
-.tag-btn.active{background:var(--gold-dim);border-color:rgba(201,168,76,.3);color:var(--gold)}
-.divider{height:1px;background:var(--border);margin:20px 0}
+.tag-btn.active{background:var(--gold-dim);border-color:rgba(184,149,46,.3);color:var(--gold)}
+
+.section-divider{
+  height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);
+  margin:28px 0;
+}
+
+/* animações escalonadas */
+.stats-grid .stat-card:nth-child(1){animation-delay:.05s}
+.stats-grid .stat-card:nth-child(2){animation-delay:.1s}
+.stats-grid .stat-card:nth-child(3){animation-delay:.15s}
+.stats-grid .stat-card:nth-child(4){animation-delay:.2s}
+.stats-grid .stat-card:nth-child(5){animation-delay:.25s}
+.stats-grid .stat-card:nth-child(6){animation-delay:.3s}
 </style>
 </head>
 <body>
-
-<!-- CONFIG: aponte para sua API no Render -->
-<script>
-  // 🔧 CONFIGURE AQUI — URL da sua API no Render
-  const API_URL = 'https://gutowski-mailing-api.onrender.com';
-  // Exemplo: 'https://gutowski-mailing-api.onrender.com'
-  // Troque pelo endereço real do seu serviço no Render
-</script>
 
 <!-- ═══ LOGIN ═══ -->
 <div id="login-screen">
   <div class="login-card">
     <div class="login-logo">
-      <div class="brand">Gutowski <span>·</span> Mailing</div>
-      <div class="sub">Sistema Multi-Estado · SC / PR / SP</div>
+      <div class="wordmark">Gutowski <span class="sep">·</span> Mailing</div>
+      <div class="sub">Cobrança Garantida</div>
+      <div class="ver">v2.0 · Multi-Estado</div>
     </div>
     <div class="greeting" id="greeting-text"></div>
     <div class="form-group">
       <label>E-mail</label>
-      <input type="email" id="login-email" placeholder="admin@amanda" autocomplete="email">
+      <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
     </div>
     <div class="form-group">
       <label>Senha</label>
       <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
     </div>
-    <button class="btn-primary full" id="btn-login" onclick="doLogin()">Entrar</button>
+    <button class="btn-login" id="btn-login" onclick="doLogin()">Entrar no Sistema</button>
     <div class="login-error" id="login-error">Credenciais inválidas. Tente novamente.</div>
   </div>
 </div>
@@ -307,152 +617,214 @@ tr:hover td{background:var(--surface2)}
 <!-- ═══ APP ═══ -->
 <div id="app">
   <div class="topbar">
-    <div class="topbar-brand">Gutowski <span>·</span> Mailing</div>
+    <div class="topbar-brand">
+      <div class="wordmark">Gutowski <span class="sep">·</span> Mailing System</div>
+      <div class="ver">v2 · SC / PR / SP</div>
+    </div>
     <div class="topbar-right">
       <div class="topbar-user" id="user-label"></div>
-      <button class="btn-sm" onclick="doLogout()">Sair</button>
+      <button class="btn-logout" onclick="doLogout()">Sair</button>
     </div>
   </div>
+
   <div class="nav">
-    <button class="nav-tab active" onclick="switchNav('dashboard',this)">📊 Dashboard</button>
+    <button class="nav-tab active" onclick="switchNav('import',this)">📥 Importar</button>
+    <button class="nav-tab" onclick="switchNav('dashboard',this)">📊 Dashboard</button>
     <button class="nav-tab" onclick="switchNav('contacts',this)">📋 Contatos</button>
-    <button class="nav-tab" onclick="switchNav('import',this)">📥 Importar</button>
-    <button class="nav-tab" onclick="switchNav('imports',this)">📁 Histórico</button>
+    <button class="nav-tab" onclick="switchNav('compare',this)">⚖️ Comparativo</button>
+    <button class="nav-tab" onclick="switchNav('whatsapp',this)">💬 WhatsApp</button>
+    <button class="nav-tab" onclick="switchNav('export',this)">📤 Exportar</button>
   </div>
+
   <div class="main">
 
-    <!-- ═══ DASHBOARD ═══ -->
-    <div id="nav-dashboard" class="section active">
+    <!-- ═══ IMPORT ═══ -->
+    <div id="nav-import" class="section active">
       <div class="section-header">
-        <h2>Dashboard</h2>
-        <p>Visão geral do mailing por estado</p>
+        <h2>Importar Mailing por Estado</h2>
+        <p>Envie arquivos CSV ou TXT e atribua o estado correspondente</p>
       </div>
-      <div class="state-bar" id="dash-state-bar"></div>
-      <div class="stats-grid" id="stats-grid">
-        <div class="stat-card gold"><div class="slabel">Total</div><div class="svalue" id="s-total">—</div></div>
-        <div class="stat-card green"><div class="slabel">Bom Lead</div><div class="svalue" id="s-bom">—</div></div>
-        <div class="stat-card blue"><div class="slabel">Em Andamento</div><div class="svalue" id="s-and">—</div></div>
-        <div class="stat-card purple"><div class="slabel">Convertidos</div><div class="svalue" id="s-conv" style="color:var(--purple)">—</div></div>
-        <div class="stat-card red"><div class="slabel">Não Existe</div><div class="svalue" id="s-nex">—</div></div>
-        <div class="stat-card yellow"><div class="slabel">Score Médio</div><div class="svalue" id="s-score">—</div></div>
+
+      <div class="assign-row" style="margin-bottom:16px">
+        <label>Estado padrão para novos arquivos:</label>
+        <select class="state-select" id="default-state">
+          <option value="auto">🤖 Detectar automaticamente</option>
+          <option value="SC">🔵 Santa Catarina (SC)</option>
+          <option value="PR">🟢 Paraná (PR)</option>
+          <option value="SP">🟠 São Paulo (SP)</option>
+        </select>
       </div>
-      <div id="dash-dist"></div>
+
+      <div class="upload-zone" id="upload-zone"
+           ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+        <input type="file" id="file-input" multiple accept=".csv,.txt" onchange="handleFileSelect(event)">
+        <span class="upload-icon">📂</span>
+        <h3>Arraste arquivos aqui ou clique para selecionar</h3>
+        <p>Suporte a múltiplos arquivos — SC, PR e SP simultaneamente</p>
+        <div class="hint">.csv · .txt · detecção automática de estado pelo nome do arquivo</div>
+      </div>
+
+      <div class="files-list" id="files-list"></div>
+
+      <button class="btn-process" id="btn-process" disabled onclick="processFiles()">
+        ⚡ Processar e Higienizar
+      </button>
+
+      <div class="progress-wrap" id="progress-wrap">
+        <div id="progress-steps"></div>
+      </div>
+    </div>
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <div id="nav-dashboard" class="section">
+      <div id="dash-empty" class="empty-state">
+        <span class="icon">📊</span>
+        <p>Importe arquivos para ver o dashboard.</p>
+      </div>
+      <div id="dash-content" style="display:none">
+        <div class="state-bar" id="state-bar-dash"></div>
+        <div class="stats-grid" id="stats-grid"></div>
+        <div id="state-breakdown"></div>
+      </div>
     </div>
 
     <!-- ═══ CONTACTS ═══ -->
     <div id="nav-contacts" class="section">
-      <div class="section-header">
-        <h2>Contatos</h2>
-        <p>Gerencie, qualifique e acione cada contato</p>
+      <div id="contacts-empty" class="empty-state">
+        <span class="icon">📋</span>
+        <p>Nenhum contato processado ainda.</p>
       </div>
-      <div class="state-bar" id="contacts-state-bar"></div>
-      <div class="tcontrols">
-        <input type="text" class="search-input" id="search-input"
-               placeholder="🔍  Nome, cidade, telefone..." oninput="debounceSearch()">
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <select class="sel" id="filter-status" onchange="loadContacts(1)">
-            <option value="">Todos os status</option>
-            <option value="PENDENTE">⏳ Pendente</option>
-            <option value="BOM_LEAD">⭐ Bom Lead</option>
-            <option value="EM_ANDAMENTO">🔄 Em Andamento</option>
-            <option value="CONVERTIDO">✅ Convertido</option>
-            <option value="NAO_EXISTE">❌ Não Existe</option>
-            <option value="SEM_INTERESSE">😐 Sem Interesse</option>
-            <option value="DESCARTADO">🗑 Descartado</option>
-          </select>
-          <select class="sel" id="filter-order" onchange="loadContacts(1)">
-            <option value="score">↓ Score</option>
-            <option value="nome">A-Z Nome</option>
-            <option value="updatedAt">↓ Atualizado</option>
-          </select>
+      <div id="contacts-content" style="display:none">
+        <div class="state-bar" id="state-bar-contacts"></div>
+        <div class="table-controls">
+          <input type="text" class="search-input" id="search-input"
+                 placeholder="🔍  Buscar por nome, cidade, telefone..." oninput="renderTable()">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select class="filter-select" id="filter-tipo" onchange="renderTable()">
+              <option value="">Todos os tipos</option>
+            </select>
+            <select class="filter-select" id="filter-status" onchange="renderTable()">
+              <option value="">Todos os status</option>
+              <option value="valido">✅ Válido</option>
+              <option value="duplicado">🔁 Duplicado</option>
+              <option value="sem_email">📧 Sem Email</option>
+              <option value="sem_telefone">📞 Sem Tel.</option>
+            </select>
+          </div>
+        </div>
+        <div class="tag-filter" id="tag-filter"></div>
+        <div class="table-wrapper">
+          <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th onclick="sortBy('nome')"># Nome</th>
+                <th>Estado</th>
+                <th onclick="sortBy('tipo')">Tipo</th>
+                <th onclick="sortBy('cidade')">Cidade</th>
+                <th>Telefone</th>
+                <th>Email</th>
+                <th onclick="sortBy('score')">Score</th>
+                <th>Status</th>
+              </tr></thead>
+              <tbody id="table-body"></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="pagination"></div>
         </div>
       </div>
-      <div class="tag-filter" id="city-tags"></div>
-      <div class="twrap">
-        <div class="tscroll">
-          <table>
-            <thead><tr>
-              <th>Nome</th>
-              <th>Estado</th>
-              <th>Tipo</th>
-              <th>Cidade</th>
-              <th>Telefone</th>
-              <th>Score</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr></thead>
-            <tbody id="table-body"><tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text3)">Carregando...</td></tr></tbody>
-          </table>
+    </div>
+
+    <!-- ═══ COMPARE ═══ -->
+    <div id="nav-compare" class="section">
+      <div id="compare-empty" class="empty-state">
+        <span class="icon">⚖️</span>
+        <p>Importe dados de pelo menos 2 estados para ver o comparativo.</p>
+      </div>
+      <div id="compare-content" style="display:none">
+        <div class="section-header">
+          <h2>Comparativo entre Estados</h2>
+          <p>Análise comparativa de qualidade, cobertura e potencial por estado</p>
         </div>
-        <div class="pagination" id="pagination"></div>
+        <div class="compare-grid" id="compare-grid"></div>
+        <div class="section-header" style="margin-top:8px">
+          <h2>Ranking de Qualidade</h2>
+          <p>Estados ordenados por score médio e percentual de válidos</p>
+        </div>
+        <div id="ranking-grid"></div>
       </div>
     </div>
 
-    <!-- ═══ IMPORT ═══ -->
-    <div id="nav-import" class="section">
+    <!-- ═══ WHATSAPP ═══ -->
+    <div id="nav-whatsapp" class="section">
+      <div id="wa-empty" class="empty-state">
+        <span class="icon">💬</span>
+        <p>Importe contatos para gerar roteiros de WhatsApp.</p>
+      </div>
+      <div id="wa-content" style="display:none">
+        <div class="section-header">
+          <h2>Roteiros de WhatsApp por Estado</h2>
+          <p>Mensagens personalizadas para os melhores contatos de cada estado</p>
+        </div>
+        <div class="state-bar" id="state-bar-wa" style="margin-bottom:20px"></div>
+        <div class="wa-grid" id="wa-grid"></div>
+      </div>
+    </div>
+
+    <!-- ═══ EXPORT ═══ -->
+    <div id="nav-export" class="section">
       <div class="section-header">
-        <h2>Importar Mailing</h2>
-        <p>Envie CSV ou TXT — os contatos vão direto para o banco de dados</p>
+        <h2>Exportar por Estado</h2>
+        <p>Baixe listas separadas ou consolidadas por estado</p>
       </div>
-      <div class="assign-row">
-        <label>Estado do arquivo:</label>
-        <select class="sel" id="import-state">
-          <option value="SC">🔵 Santa Catarina (SC)</option>
-          <option value="PR" selected>🟢 Paraná (PR)</option>
-          <option value="SP">🟠 São Paulo (SP)</option>
-        </select>
+      <div class="state-bar" id="state-bar-export" style="margin-bottom:20px"></div>
+      <div class="export-grid" id="export-grid">
+        <div class="export-card" onclick="exportByState('SC','all')">
+          <span class="icon">🔵</span><h3>SC · Completo</h3>
+          <p>Todos os contatos de SC</p>
+        </div>
+        <div class="export-card" onclick="exportByState('SC','valid')">
+          <span class="icon">✅</span><h3>SC · Válidos</h3>
+          <p>Apenas SC sem duplicatas</p>
+        </div>
+        <div class="export-card" onclick="exportByState('PR','all')">
+          <span class="icon">🟢</span><h3>PR · Completo</h3>
+          <p>Todos os contatos do PR</p>
+        </div>
+        <div class="export-card" onclick="exportByState('PR','valid')">
+          <span class="icon">✅</span><h3>PR · Válidos</h3>
+          <p>Apenas PR sem duplicatas</p>
+        </div>
+        <div class="export-card" onclick="exportByState('SP','all')">
+          <span class="icon">🟠</span><h3>SP · Completo</h3>
+          <p>Todos os contatos de SP</p>
+        </div>
+        <div class="export-card" onclick="exportByState('SP','valid')">
+          <span class="icon">✅</span><h3>SP · Válidos</h3>
+          <p>Apenas SP sem duplicatas</p>
+        </div>
+        <div class="export-card" onclick="exportAll('all')">
+          <span class="icon">📦</span><h3>Mailing Completo</h3>
+          <p>SC + PR + SP unificados</p>
+        </div>
+        <div class="export-card" onclick="exportAll('high')">
+          <span class="icon">⭐</span><h3>Alta Prioridade</h3>
+          <p>Score ≥ 70 · todos estados</p>
+        </div>
+        <div class="export-card" onclick="exportReport()">
+          <span class="icon">📊</span><h3>Relatório HTML</h3>
+          <p>Relatório comparativo completo</p>
+        </div>
       </div>
-      <div class="upload-zone" id="upload-zone"
-           ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-        <input type="file" id="file-input" multiple accept=".csv,.txt" onchange="handleFileSelect(event)">
-        <div class="upload-icon">📂</div>
-        <h3>Arraste arquivos ou clique para selecionar</h3>
-        <p>Suporte a múltiplos arquivos simultâneos</p>
-        <div class="hint">.csv · .txt</div>
-      </div>
-      <div class="files-list" id="files-list"></div>
-      <button class="btn-primary" id="btn-upload" disabled onclick="uploadFiles()" style="margin-top:16px">
-        ⚡ Enviar ao Banco de Dados
-      </button>
-      <div class="prog-wrap" id="prog-wrap" style="display:none">
-        <div id="prog-steps"></div>
+      <div class="export-preview-box" id="export-preview">
+        <div style="font-size:10.5px;color:var(--text3);margin-bottom:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1px">Pré-visualização</div>
+        <pre id="export-preview-text" style="font-family:var(--mono);font-size:11px;color:var(--text2);white-space:pre-wrap;max-height:280px;overflow-y:auto;line-height:1.6"></pre>
+        <div style="margin-top:14px;display:flex;gap:8px">
+          <button class="btn-process" onclick="triggerDownload()" style="padding:9px 20px;font-size:13px">⬇ Baixar</button>
+          <button class="btn-secondary" onclick="document.getElementById('export-preview').style.display='none'">Fechar</button>
+        </div>
       </div>
     </div>
 
-    <!-- ═══ IMPORT HISTORY ═══ -->
-    <div id="nav-imports" class="section">
-      <div class="section-header">
-        <h2>Histórico de Importações</h2>
-        <p>Todos os arquivos enviados para o banco</p>
-      </div>
-      <div id="imports-list"><div class="empty-state"><div class="eicon">📁</div><p>Carregando...</p></div></div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ═══ STATUS MODAL ═══ -->
-<div class="modal-overlay" id="status-modal">
-  <div class="modal">
-    <button class="close" onclick="closeModal()">✕</button>
-    <h3 id="modal-contact-name">Contato</h3>
-    <div class="sub" id="modal-contact-sub"></div>
-    <div class="status-options">
-      <button class="status-opt bom"  data-status="BOM_LEAD"      onclick="selectStatus(this)">⭐ Bom Lead</button>
-      <button class="status-opt and"  data-status="EM_ANDAMENTO"  onclick="selectStatus(this)">🔄 Em Andamento</button>
-      <button class="status-opt conv" data-status="CONVERTIDO"    onclick="selectStatus(this)">✅ Convertido</button>
-      <button class="status-opt nex"  data-status="NAO_EXISTE"    onclick="selectStatus(this)">❌ Não Existe</button>
-      <button class="status-opt sem"  data-status="SEM_INTERESSE" onclick="selectStatus(this)">😐 Sem Interesse</button>
-      <button class="status-opt desc" data-status="DESCARTADO"    onclick="selectStatus(this)">🗑 Descartado</button>
-    </div>
-    <textarea class="note-input" id="modal-note" placeholder="Observação (opcional) — o que aconteceu neste contato?"></textarea>
-    <div style="display:flex;gap:8px">
-      <button class="btn-primary" id="btn-save-status" onclick="saveStatus()">Salvar</button>
-      <button class="btn-sm" onclick="closeModal()">Cancelar</button>
-    </div>
-    <div class="divider"></div>
-    <div style="font-size:12px;font-weight:700;color:var(--text3);margin-bottom:10px;letter-spacing:.8px;text-transform:uppercase">Histórico</div>
-    <div id="modal-history"></div>
   </div>
 </div>
 
@@ -460,120 +832,104 @@ tr:hover td{background:var(--surface2)}
 
 <script>
 // ══════════════════════════════════
-//  CONFIG
-// ══════════════════════════════════
-let token = null;
-let currentUser = null;
-let currentPage = 1;
-let currentStateFilter = 'all';
-let activeCityTags = new Set();
-let modalContactId = null;
-let selectedStatus = null;
-let searchTimer = null;
-let statsCounts = {};
-
-const STATUS_LABELS = {
-  PENDENTE:      { label:'Pendente',      icon:'⏳', cls:'b-gray'   },
-  BOM_LEAD:      { label:'Bom Lead',      icon:'⭐', cls:'b-green'  },
-  EM_ANDAMENTO:  { label:'Em Andamento',  icon:'🔄', cls:'b-blue'   },
-  CONVERTIDO:    { label:'Convertido',    icon:'✅', cls:'b-purple' },
-  NAO_EXISTE:    { label:'Não Existe',    icon:'❌', cls:'b-red'    },
-  SEM_INTERESSE: { label:'Sem Interesse', icon:'😐', cls:'b-yellow' },
-  DESCARTADO:    { label:'Descartado',    icon:'🗑', cls:'b-gray'   },
-};
-
-const STATE_COLORS = { SC:'sc', PR:'pr', SP:'sp' };
-const STATE_ICONS  = { SC:'🔵', PR:'🟢', SP:'🟠' };
-const STATE_NAMES  = { SC:'Santa Catarina', PR:'Paraná', SP:'São Paulo' };
-
-// ══════════════════════════════════
-//  AUTH
+//  AUTH — integrado com o backend
 // ══════════════════════════════════
 function setGreeting() {
   const h = new Date().getHours();
   const g = h<12?'🌅 Bom dia!':h<18?'☀️ Boa tarde!':'🌙 Boa noite!';
   document.getElementById('greeting-text').textContent =
-    `${g} Bem-vindo ao Sistema de Mailing da Gutowski Cobrança Garantida.`;
+    `${g} Bem-vindo ao Sistema de Mailing Multi-Estado da Gutowski Cobrança Garantida.`;
 }
 setGreeting();
 
 async function doLogin() {
   const email = document.getElementById('login-email').value.trim();
-  const pass  = document.getElementById('login-pass').value;
-  if (!email || !pass) return;
-  const btn = document.getElementById('btn-login');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="loader"></span>Entrando...';
-  document.getElementById('login-error').style.display = 'none';
+  const password = document.getElementById('login-pass').value;
+  const errEl = document.getElementById('login-error');
+  const btnEl = document.getElementById('btn-login');
+
+  errEl.style.display='none';
+  btnEl.disabled=true;
+  btnEl.textContent='Entrando...';
+
   try {
-    const res = await api('/api/auth/login', 'POST', { email, password: pass }, false);
-    token = res.token;
-    currentUser = res.user;
-    sessionStorage.setItem('gut_token', token);
-    sessionStorage.setItem('gut_user', JSON.stringify(currentUser));
-    showApp();
-  } catch (e) {
-    document.getElementById('login-error').style.display = 'block';
-    document.getElementById('login-error').textContent = e.message || 'Credenciais inválidas';
+    const res = await fetch('/api/login', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      credentials:'include',
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+
+    if (res.ok && data.ok) {
+      // Guarda token e usuário
+      sessionStorage.setItem('gut_auth','1');
+      sessionStorage.setItem('gut_user', data.user.email);
+      enterApp(data.user.email);
+      toast('Login realizado com sucesso!','success');
+    } else {
+      errEl.textContent = data.error || 'Credenciais inválidas.';
+      errEl.style.display='block';
+      document.getElementById('login-pass').value='';
+    }
+  } catch (err) {
+    // Fallback offline (sem backend rodando em dev)
+    errEl.textContent = 'Erro de conexão. Verifique o servidor.';
+    errEl.style.display='block';
   } finally {
-    btn.disabled = false;
-    btn.textContent = 'Entrar';
+    btnEl.disabled=false;
+    btnEl.textContent='Entrar no Sistema';
   }
 }
 
-function showApp() {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  document.getElementById('user-label').textContent = currentUser.name;
-  loadStats();
-  loadContacts(1);
-  loadImports();
-  buildStateBars();
+function enterApp(email) {
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('user-label').textContent = email || sessionStorage.getItem('gut_user') || '';
 }
 
-function doLogout() {
-  sessionStorage.clear();
+async function doLogout() {
+  try { await fetch('/api/logout',{method:'POST',credentials:'include'}); } catch{}
+  sessionStorage.removeItem('gut_auth');
+  sessionStorage.removeItem('gut_user');
   location.reload();
 }
 
-// Auto-login from session
-const savedToken = sessionStorage.getItem('gut_token');
-if (savedToken) {
-  token = savedToken;
-  currentUser = JSON.parse(sessionStorage.getItem('gut_user') || '{}');
-  showApp();
-}
-
-document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
-document.getElementById('login-email').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('login-pass').focus(); });
-
-// ══════════════════════════════════
-//  API HELPER
-// ══════════════════════════════════
-async function api(path, method='GET', body=null, auth=true) {
-  const headers = { 'Content-Type': 'application/json' };
-  if (auth && token) headers['Authorization'] = `Bearer ${token}`;
-  const opts = { method, headers };
-  if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(API_URL + path, opts);
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    if (res.status === 401) { sessionStorage.clear(); location.reload(); }
-    throw new Error(data.error || `Erro ${res.status}`);
+// Verifica sessão existente no backend
+async function checkSession() {
+  try {
+    const res = await fetch('/api/me', { credentials:'include' });
+    if (res.ok) {
+      const data = await res.json();
+      enterApp(data.user.email);
+      return;
+    }
+  } catch {}
+  // Fallback: sessão local (caso backend indisponível)
+  if (sessionStorage.getItem('gut_auth')==='1') {
+    enterApp(sessionStorage.getItem('gut_user'));
   }
-  return data;
 }
+checkSession();
 
-async function apiUpload(path, formData) {
-  const res = await fetch(API_URL + path, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${token}` },
-    body: formData,
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);
-  return data;
-}
+document.getElementById('login-pass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+document.getElementById('login-email').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('login-pass').focus(); });
+
+// ══════════════════════════════════
+//  STATE
+// ══════════════════════════════════
+let loadedFiles = [];
+let allContacts = [];
+let currentPage = 1;
+const PAGE_SIZE = 50;
+let sortKey='score', sortDir=-1;
+let activeStateFilter = 'all';
+let activeTags = new Set();
+let currentExportData = null, currentExportFilename = '';
+
+const STATE_COLORS = { SC:'sc', PR:'pr', SP:'sp' };
+const STATE_LABELS = { SC:'Santa Catarina', PR:'Paraná', SP:'São Paulo', all:'Todos' };
+const STATE_ICONS  = { SC:'🔵', PR:'🟢', SP:'🟠', all:'🌐' };
 
 // ══════════════════════════════════
 //  NAV
@@ -583,424 +939,660 @@ function switchNav(name, btn) {
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('nav-'+name).classList.add('active');
   btn.classList.add('active');
-  if (name==='imports') loadImports();
 }
 
 // ══════════════════════════════════
-//  STATE BARS
+//  FILE DETECTION
 // ══════════════════════════════════
-function buildStateBars() {
-  ['dash-state-bar','contacts-state-bar'].forEach((id, idx) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const fn = idx===0 ? 'filterDash' : 'filterContacts';
-    el.innerHTML = `
-      <button class="state-btn all ${currentStateFilter==='all'?'active':''}" onclick="${fn}('all',this)">
-        <span class="sdot" style="background:linear-gradient(135deg,var(--sc),var(--pr))"></span>
-        🌐 Todos <span class="scnt">(${statsCounts.total||'—'})</span>
-      </button>
-      ${['SC','PR','SP'].map(s=>`
-        <button class="state-btn ${STATE_COLORS[s]} ${currentStateFilter===s?'active':''}" onclick="${fn}('${s}',this)">
-          <span class="sdot" style="background:var(--${STATE_COLORS[s]})"></span>
-          ${STATE_ICONS[s]} ${s} <span class="scnt">(${(statsCounts.byEstado||{})[s]||'0'})</span>
-        </button>`).join('')}`;
+function detectState(filename) {
+  const f = filename.toLowerCase();
+  if(f.includes('_sc')||f.includes('sc_')||f.includes('catarinens')||f.includes('florianop')||
+     f.includes('joinville')||f.includes('blumenau')||f.includes('santa_catarina')||f.includes('catarinense')) return 'SC';
+  if(f.includes('_pr')||f.includes('pr_')||f.includes('curitiba')||f.includes('parana')||
+     f.includes('pinhais')||f.includes('campo_largo')||f.includes('metropolitana')) return 'PR';
+  if(f.includes('_sp')||f.includes('sp_')||f.includes('sao_paulo')||f.includes('paulista')||
+     f.includes('campinas')||f.includes('guarulhos')) return 'SP';
+  return null;
+}
+
+// ══════════════════════════════════
+//  UPLOAD
+// ══════════════════════════════════
+function handleDragOver(e){ e.preventDefault(); document.getElementById('upload-zone').classList.add('drag-over'); }
+function handleDragLeave(){ document.getElementById('upload-zone').classList.remove('drag-over'); }
+function handleDrop(e){ e.preventDefault(); document.getElementById('upload-zone').classList.remove('drag-over'); addFiles([...e.dataTransfer.files]); }
+function handleFileSelect(e){ addFiles([...e.target.files]); }
+
+function addFiles(files) {
+  const allowed = files.filter(f=>f.name.match(/\.(csv|txt)$/i));
+  if(allowed.length!==files.length) toast('Apenas CSV e TXT são aceitos.','error');
+  const defaultState = document.getElementById('default-state').value;
+  allowed.forEach(f=>{
+    if(!loadedFiles.find(x=>x.name===f.name)){
+      const detected = detectState(f.name);
+      const state = defaultState!=='auto' ? defaultState : (detected||'auto');
+      loadedFiles.push({ file:f, name:f.name, state });
+    }
   });
+  renderFilesList();
 }
 
-function filterDash(state, btn) {
-  currentStateFilter = state;
-  document.querySelectorAll('#dash-state-bar .state-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  loadStats();
+function renderFilesList() {
+  const list = document.getElementById('files-list');
+  const btn  = document.getElementById('btn-process');
+  if(!loadedFiles.length){ list.innerHTML=''; btn.disabled=true; return; }
+  list.innerHTML = loadedFiles.map((f,i)=>{
+    const stateBadge = f.state==='auto'
+      ? `<span class="file-state-badge badge-auto">Auto</span>`
+      : `<span class="file-state-badge badge-${f.state.toLowerCase()}">${STATE_ICONS[f.state]} ${f.state}</span>`;
+    return `<div class="file-item">
+      <div class="file-item-left">
+        <span style="font-size:20px">${f.name.endsWith('.csv')?'📋':'📄'}</span>
+        <div>
+          <div class="file-name">${f.name}</div>
+          <div class="file-meta">${(f.file.size/1024).toFixed(1)} KB</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        ${stateBadge}
+        <select class="state-select" onchange="changeFileState(${i},this.value)" style="padding:4px 8px;font-size:11px">
+          <option value="auto" ${f.state==='auto'?'selected':''}>Auto</option>
+          <option value="SC" ${f.state==='SC'?'selected':''}>SC</option>
+          <option value="PR" ${f.state==='PR'?'selected':''}>PR</option>
+          <option value="SP" ${f.state==='SP'?'selected':''}>SP</option>
+        </select>
+        <span class="file-status pending">Aguardando</span>
+        <button onclick="removeFile(${i})" style="background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:13px;transition:color .15s" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+  btn.disabled = false;
 }
 
-function filterContacts(state, btn) {
-  currentStateFilter = state;
-  activeCityTags.clear();
-  document.querySelectorAll('#contacts-state-bar .state-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  loadContacts(1);
+function changeFileState(i,val){ loadedFiles[i].state=val; renderFilesList(); }
+function removeFile(i){ loadedFiles.splice(i,1); renderFilesList(); }
+
+// ══════════════════════════════════
+//  PARSE
+// ══════════════════════════════════
+function parseCSV(text,filename,state){
+  const lines=text.split(/\r?\n/).filter(l=>l.trim());
+  if(!lines.length) return [];
+  const headers=lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/['"]/g,''));
+  return lines.slice(1).map(line=>{
+    const cols=parseCSVLine(line);
+    if(!cols.length) return null;
+    const obj={};
+    headers.forEach((h,j)=>obj[h]=(cols[j]||'').trim().replace(/^["']|["']$/g,''));
+    return normalizeContact(obj,filename,state);
+  }).filter(Boolean);
+}
+
+function parseCSVLine(line){
+  const r=[]; let cur='',inQ=false;
+  for(const c of line){
+    if(c==='"'){inQ=!inQ;continue}
+    if(c===','&&!inQ){r.push(cur);cur=''}
+    else cur+=c;
+  }
+  r.push(cur);
+  return r;
+}
+
+function parseTXT(text,filename,state){
+  return text.split(/\n\s*\n/).filter(b=>b.trim()).map(block=>{
+    const obj={};
+    block.split('\n').forEach(line=>{
+      const m=line.match(/^([^:]+):\s*(.+)$/);
+      if(m) obj[m[1].trim().toLowerCase()]=m[2].trim();
+    });
+    return normalizeContact(obj,filename,state);
+  }).filter(c=>c.nome);
+}
+
+function normalizeContact(obj,filename,state){
+  const nome=obj.nome||obj.name||'';
+  const telefone=obj.telefone||obj.phone||obj.fone||obj.tel||'';
+  const email=obj.email||obj['e-mail']||'';
+  const cidade=obj.cidade||obj['cidade_bairro']||obj.city||obj.bairro||'';
+  const tipo=obj.tipo||obj.categoria||obj.category||'';
+  const fonte=obj.fonte||obj.source||filename;
+  const obs=obj['observação']||obj.observacao||obj.obs||'';
+  return{nome,telefone,email,cidade,tipo,fonte,obs,origem:filename,estado:state||'?',_raw:obj};
+}
+
+function inferState(contact,fileState){
+  if(fileState&&fileState!=='auto') return fileState;
+  const loc=(contact.cidade+contact.origem).toLowerCase();
+  if(loc.includes('sc')||loc.includes('florianopolis')||loc.includes('joinville')||
+     loc.includes('blumenau')||loc.includes('chapeco')||loc.includes('itajai')||
+     loc.includes('criciuma')||loc.includes('brusque')) return 'SC';
+  if(loc.includes('pr')||loc.includes('curitiba')||loc.includes('parana')||
+     loc.includes('pinhais')||loc.includes('campo largo')||loc.includes('londrina')||
+     loc.includes('maringa')) return 'PR';
+  if(loc.includes('sp')||loc.includes('são paulo')||loc.includes('sao paulo')||
+     loc.includes('campinas')||loc.includes('guarulhos')||loc.includes('paulista')) return 'SP';
+  return 'PR';
+}
+
+function scoreContact(c){
+  let s=0;
+  if(c.email&&c.email.includes('@')) s+=30;
+  if(c.telefone&&c.telefone.length>8) s+=25;
+  if(c.nome&&c.nome.length>3) s+=15;
+  if(c.cidade&&c.cidade.length>2) s+=10;
+  if(c.tipo&&c.tipo.length>2) s+=10;
+  if(c.obs&&c.obs.length>5) s+=10;
+  return Math.min(100,s);
 }
 
 // ══════════════════════════════════
-//  STATS / DASHBOARD
+//  PROCESS
 // ══════════════════════════════════
-async function loadStats() {
-  try {
-    const params = currentStateFilter!=='all' ? `?estado=${currentStateFilter}` : '';
-    const data = await api(`/api/contacts/stats${params}`);
-    statsCounts = data;
-    const bs = data.byStatus || {};
-    document.getElementById('s-total').textContent = data.total || 0;
-    document.getElementById('s-bom').textContent   = bs.BOM_LEAD || 0;
-    document.getElementById('s-and').textContent   = bs.EM_ANDAMENTO || 0;
-    document.getElementById('s-conv').textContent  = bs.CONVERTIDO || 0;
-    document.getElementById('s-nex').textContent   = bs.NAO_EXISTE || 0;
-    document.getElementById('s-score').textContent = data.avgScore || 0;
+async function processFiles(){
+  if(!loadedFiles.length) return;
+  document.getElementById('btn-process').disabled=true;
+  const wrap=document.getElementById('progress-wrap');
+  const stepsEl=document.getElementById('progress-steps');
+  wrap.style.display='block';
 
-    // Distribution bars
-    const be = data.byEstado || {};
-    const total = Object.values(be).reduce((a,b)=>a+b,0);
-    document.getElementById('dash-dist').innerHTML = total ? `
-      <div style="font-size:14px;font-weight:600;color:var(--text2);margin-bottom:14px">Distribuição por Estado</div>
-      ${['SC','PR','SP'].map(s=>{
-        const cnt = be[s]||0;
-        const pct = total ? Math.round((cnt/total)*100) : 0;
-        const cls = STATE_COLORS[s];
-        return `<div style="margin-bottom:12px">
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
-            <span>${STATE_ICONS[s]} ${s} – ${STATE_NAMES[s]}</span>
-            <span style="font-family:var(--mono);color:var(--text2)">${cnt} · ${pct}%</span>
+  const steps=[
+    {id:'s1',label:'Lendo e parseando arquivos...'},
+    {id:'s2',label:'Detectando estado de cada arquivo...'},
+    {id:'s3',label:'Normalizando campos (email, telefone, cidade)...'},
+    {id:'s4',label:'Detectando duplicatas por estado...'},
+    {id:'s5',label:'Calculando score de qualidade...'},
+    {id:'s6',label:'Construindo dashboards e comparativo...'},
+  ];
+  stepsEl.innerHTML=steps.map(s=>`
+    <div class="progress-step waiting" id="${s.id}">
+      <span class="step-icon">⏳</span><span>${s.label}</span>
+    </div>`).join('');
+
+  async function runStep(id,delay,fn){
+    const el=document.getElementById(id);
+    el.className='progress-step running';
+    el.querySelector('.step-icon').innerHTML='<span class="spinning">⚙️</span>';
+    await sleep(delay); fn();
+    el.className='progress-step done';
+    el.querySelector('.step-icon').textContent='✅';
+  }
+
+  let raw=[];
+  await runStep('s1',500,()=>{});
+  for(const f of loadedFiles){
+    const text=await readFile(f.file);
+    const cs=f.name.endsWith('.txt')?parseTXT(text,f.name,f.state):parseCSV(text,f.name,f.state);
+    raw.push(...cs);
+  }
+
+  await runStep('s2',400,()=>{
+    raw.forEach(c=>{ c.estado=inferState(c,c.estado); });
+  });
+
+  await runStep('s3',500,()=>{
+    raw=raw.map(c=>{
+      c.email=cleanEmail(c.email);
+      c.telefone=cleanPhone(c.telefone);
+      c.nome=c.nome.trim();
+      return c;
+    }).filter(c=>c.nome&&c.nome.length>1);
+  });
+
+  await runStep('s4',600,()=>{
+    const seen=new Map();
+    raw.forEach(c=>{
+      const key=normalizeKey(c.estado+c.nome+c.telefone);
+      if(seen.has(key)){c.status='duplicado';c.duplicateOf=seen.get(key).nome;}
+      else{seen.set(key,c);c.status='valido';}
+    });
+  });
+
+  await runStep('s5',400,()=>{
+    raw.forEach(c=>{
+      c.score=scoreContact(c);
+      if(!c.email||!c.email.includes('@')){if(c.status!=='duplicado') c.status='sem_email';}
+      if(!c.telefone||c.telefone.length<8){if(c.status!=='duplicado'&&c.status!=='sem_email') c.status='sem_telefone';}
+    });
+    raw.sort((a,b)=>b.score-a.score);
+  });
+
+  await runStep('s6',400,()=>{ allContacts=raw; });
+
+  document.querySelectorAll('.file-status').forEach(el=>{el.className='file-status ok';el.textContent='Lido';});
+
+  buildDashboard();
+  buildFilters();
+  renderTable();
+  buildCompare();
+  buildWhatsApp();
+
+  ['dash','contacts','compare','wa'].forEach(id=>{
+    document.getElementById(id+'-empty').style.display='none';
+    document.getElementById(id+'-content').style.display='block';
+  });
+
+  toast(`✅ ${allContacts.length} contatos processados!`,'success');
+  await sleep(700);
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab')[1].classList.add('active');
+  document.getElementById('nav-dashboard').classList.add('active');
+}
+
+// ══════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════
+function stateStats(state){
+  const cs=state==='all'?allContacts:allContacts.filter(c=>c.estado===state);
+  const total=cs.length;
+  const validos=cs.filter(c=>c.status==='valido').length;
+  const dupls=cs.filter(c=>c.status==='duplicado').length;
+  const semEmail=cs.filter(c=>c.status==='sem_email').length;
+  const high=cs.filter(c=>c.score>=70).length;
+  const avgScore=total?Math.round(cs.reduce((s,c)=>s+c.score,0)/total):0;
+  return{total,validos,dupls,semEmail,high,avgScore};
+}
+
+function buildStateBars(containerId,activeState,onClickFn){
+  const states=[...new Set(allContacts.map(c=>c.estado))].filter(s=>s!=='?');
+  const container=document.getElementById(containerId);
+  if(!container) return;
+  const all_count=allContacts.length;
+  container.innerHTML=`
+    <button class="state-btn all ${activeState==='all'?'active':''}" onclick="${onClickFn}('all',this)">
+      <span class="dot"></span> 🌐 Todos <span class="count">(${all_count})</span>
+    </button>
+    ${states.map(s=>{
+      const cnt=allContacts.filter(c=>c.estado===s).length;
+      return `<button class="state-btn ${s.toLowerCase()} ${activeState===s?'active':''}" onclick="${onClickFn}('${s}',this)">
+        <span class="dot"></span> ${STATE_ICONS[s]} ${s} – ${STATE_LABELS[s]} <span class="count">(${cnt})</span>
+      </button>`;
+    }).join('')}`;
+}
+
+function buildDashboard(){ buildStateBars('state-bar-dash','all','filterDashState'); renderDashStats('all'); }
+
+function filterDashState(state,btn){
+  document.querySelectorAll('#state-bar-dash .state-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); renderDashStats(state);
+}
+
+function renderDashStats(state){
+  const s=stateStats(state);
+  const stateColor=state==='all'?'gold':STATE_COLORS[state]||'gold';
+  document.getElementById('stats-grid').innerHTML=`
+    <div class="stat-card ${stateColor}">
+      <div class="stat-label">Total</div>
+      <div class="stat-value">${s.total}</div>
+      <div class="stat-sub">${state==='all'?'Todos os estados':STATE_LABELS[state]}</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Válidos</div>
+      <div class="stat-value">${s.validos}</div>
+      <div class="stat-sub">${s.total?((s.validos/s.total)*100).toFixed(0):0}% do total</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">Duplicados</div>
+      <div class="stat-value">${s.dupls}</div>
+      <div class="stat-sub">Removíveis</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="stat-label">Sem Email</div>
+      <div class="stat-value">${s.semEmail}</div>
+      <div class="stat-sub">Enriquecimento necessário</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-label">Alta Prioridade</div>
+      <div class="stat-value">${s.high}</div>
+      <div class="stat-sub">Score ≥ 70</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-label">Score Médio</div>
+      <div class="stat-value">${s.avgScore}</div>
+      <div class="stat-sub">de 100 pontos</div>
+    </div>`;
+
+  const states=[...new Set(allContacts.map(c=>c.estado))].filter(s=>s!=='?');
+  if(state==='all'){
+    document.getElementById('state-breakdown').innerHTML=`
+      <div style="margin-bottom:16px;font-size:13px;font-weight:600;color:var(--text2);letter-spacing:.3px">Distribuição por Estado</div>
+      ${states.map(st=>{
+        const ss=stateStats(st);
+        const pct=s.total?Math.round((ss.total/s.total)*100):0;
+        const cls=STATE_COLORS[st]||'gold';
+        return `<div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:7px">
+            <span style="color:var(--text)">${STATE_ICONS[st]} ${st} – ${STATE_LABELS[st]}</span>
+            <span style="font-family:var(--mono);color:var(--text2)">${ss.total} contatos · ${pct}%</span>
           </div>
           <div style="height:5px;background:var(--border2);border-radius:99px;overflow:hidden">
-            <div style="height:100%;width:${pct}%;background:var(--${cls});border-radius:99px;transition:width .6s"></div>
+            <div style="height:100%;width:${pct}%;background:var(--${cls});border-radius:99px;transition:width .8s cubic-bezier(.4,0,.2,1)"></div>
           </div>
         </div>`;
-      }).join('')}` : '';
-    buildStateBars();
-  } catch (e) { console.error(e); }
+      }).join('')}`;
+  } else { document.getElementById('state-breakdown').innerHTML=''; }
 }
 
 // ══════════════════════════════════
 //  CONTACTS TABLE
 // ══════════════════════════════════
-let searchValue = '';
-function debounceSearch() {
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => {
-    searchValue = document.getElementById('search-input').value;
-    loadContacts(1);
-  }, 350);
-}
-
-async function loadContacts(page=1) {
-  currentPage = page;
-  const status  = document.getElementById('filter-status')?.value || '';
-  const orderBy = document.getElementById('filter-order')?.value || 'score';
-  const params  = new URLSearchParams({ page, pageSize: 50, orderBy, order: 'desc' });
-  if (currentStateFilter !== 'all') params.set('estado', currentStateFilter);
-  if (status) params.set('status', status);
-  if (searchValue) params.set('search', searchValue);
-
-  try {
-    const data = await api(`/api/contacts?${params}`);
-    renderTable(data.data, data.meta);
-    buildCityTags(data.data);
-  } catch (e) {
-    toast('Erro ao carregar contatos: ' + e.message, 'error');
-  }
-}
-
-function buildCityTags(contacts) {
-  const cities = [...new Set(contacts.map(c=>(c.cidade||'').split('/')[0].trim()).filter(Boolean))].sort();
-  document.getElementById('city-tags').innerHTML = cities.slice(0,14).map(c=>
-    `<button class="tag-btn ${activeCityTags.has(c)?'active':''}" onclick="toggleCityTag('${c}',this)">${c}</button>`
+function buildFilters(){
+  buildStateBars('state-bar-contacts','all','filterContactsState');
+  buildStateBars('state-bar-wa','all','filterWaState');
+  buildStateBars('state-bar-export','all','()=>{}');
+  const tipos=[...new Set(allContacts.map(c=>c.tipo).filter(Boolean))];
+  document.getElementById('filter-tipo').innerHTML='<option value="">Todos os tipos</option>'+
+    tipos.map(t=>`<option value="${t}">${t}</option>`).join('');
+  const cs=activeStateFilter==='all'?allContacts:allContacts.filter(c=>c.estado===activeStateFilter);
+  const cidades=[...new Set(cs.map(c=>c.cidade.split('/')[0].trim()).filter(Boolean))].sort();
+  document.getElementById('tag-filter').innerHTML=cidades.slice(0,14).map(c=>
+    `<button class="tag-btn ${activeTags.has(c)?'active':''}" onclick="toggleTag('${c}',this)">${c}</button>`
   ).join('');
 }
 
-function toggleCityTag(city, btn) {
-  if (activeCityTags.has(city)) { activeCityTags.delete(city); btn.classList.remove('active'); }
-  else { activeCityTags.add(city); btn.classList.add('active'); }
-  // filter client-side (city tags are local filter on top of server results)
-  loadContacts(currentPage);
+function filterContactsState(state,btn){
+  document.querySelectorAll('#state-bar-contacts .state-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); activeStateFilter=state; currentPage=1; activeTags.clear(); buildFilters(); renderTable();
 }
 
-function renderTable(contacts, meta) {
-  const tb = document.getElementById('table-body');
-  if (!contacts.length) {
-    tb.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text3)">Nenhum contato encontrado.</td></tr>`;
+function toggleTag(city,btn){
+  if(activeTags.has(city)){activeTags.delete(city);btn.classList.remove('active');}
+  else{activeTags.add(city);btn.classList.add('active');}
+  currentPage=1;renderTable();
+}
+
+function sortBy(key){
+  if(sortKey===key) sortDir*=-1; else{sortKey=key;sortDir=1;}
+  renderTable();
+}
+
+function renderTable(){
+  const search=document.getElementById('search-input').value.toLowerCase();
+  const tipo=document.getElementById('filter-tipo').value;
+  const status=document.getElementById('filter-status').value;
+  let f=allContacts.filter(c=>{
+    if(activeStateFilter!=='all'&&c.estado!==activeStateFilter) return false;
+    const s=`${c.nome} ${c.cidade} ${c.telefone} ${c.email} ${c.tipo}`.toLowerCase();
+    if(search&&!s.includes(search)) return false;
+    if(tipo&&c.tipo!==tipo) return false;
+    if(status&&c.status!==status) return false;
+    if(activeTags.size>0&&!activeTags.has(c.cidade.split('/')[0].trim())) return false;
+    return true;
+  });
+  f.sort((a,b)=>{
+    const va=a[sortKey]||'',vb=b[sortKey]||'';
+    if(typeof va==='number') return(va-vb)*sortDir;
+    return String(va).localeCompare(String(vb),'pt-BR')*sortDir;
+  });
+  const total=f.length,pages=Math.ceil(total/PAGE_SIZE);
+  if(currentPage>pages) currentPage=1;
+  const start=(currentPage-1)*PAGE_SIZE;
+  const slice=f.slice(start,start+PAGE_SIZE);
+  const tb=document.getElementById('table-body');
+  if(!slice.length){
+    tb.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:48px;color:var(--text3)">Nenhum contato com esses filtros.</td></tr>`;
   } else {
-    tb.innerHTML = contacts.map(c => {
-      const st = STATUS_LABELS[c.status] || STATUS_LABELS.PENDENTE;
-      const dotColor = {SC:'var(--sc)',PR:'var(--pr)',SP:'var(--sp)'}[c.estado] || 'var(--text3)';
-      const scoreColor = c.score>=70 ? 'var(--pr)' : c.score<40 ? 'var(--red)' : 'var(--gold)';
-      const scoreBar = `<div class="score-bar"><div class="strack"><div class="sfill" style="width:${c.score}%;background:${scoreColor}"></div></div><span class="snum">${c.score}</span></div>`;
-      const waHref = c.telefone ? `https://wa.me/55${c.telefone.replace(/\D/g,'')}?text=${encodeURIComponent(buildWAMsg(c))}` : '#';
-      const emailHref = c.email ? `mailto:${c.email}?subject=Gutowski+Cobrança+Garantida&body=${encodeURIComponent(buildEmailMsg(c))}` : '#';
+    tb.innerHTML=slice.map(c=>{
+      const statusBadge={
+        valido:`<span class="badge badge-green">✅ Válido</span>`,
+        duplicado:`<span class="badge badge-red">🔁 Duplicado</span>`,
+        sem_email:`<span class="badge badge-yellow">📧 Sem Email</span>`,
+        sem_telefone:`<span class="badge badge-blue">📞 Sem Tel.</span>`,
+      }[c.status]||'';
+      const sc=c.score>=70?'sc':c.score<40?'sp':'pr';
+      const scoreBar=`<div class="score-bar"><div class="score-track"><div class="score-fill ${sc}" style="width:${c.score}%"></div></div><span class="score-num">${c.score}</span></div>`;
+      const dotColor={SC:'var(--sc)',PR:'var(--pr)',SP:'var(--sp)'}[c.estado]||'var(--text3)';
       return `<tr>
-        <td title="${c.nome}" style="font-weight:500">${c.nome||'—'}</td>
-        <td><span style="color:${dotColor};font-weight:700;font-size:12px">${STATE_ICONS[c.estado]||''} ${c.estado}</span></td>
-        <td>${c.tipo?`<span class="badge b-gold">${c.tipo}</span>`:'—'}</td>
+        <td title="${c.nome}" style="color:var(--text);font-weight:500">${c.nome||'—'}</td>
+        <td><span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:${dotColor}"><span style="width:7px;height:7px;border-radius:50%;background:${dotColor};flex-shrink:0"></span>${c.estado}</span></td>
+        <td>${c.tipo?`<span class="badge badge-gold">${c.tipo}</span>`:'—'}</td>
         <td>${c.cidade||'—'}</td>
-        <td style="font-family:var(--mono);font-size:12px">${c.telefone||'—'}</td>
+        <td style="font-family:var(--mono);font-size:11px">${c.telefone||'—'}</td>
+        <td style="font-size:12px">${c.email||'—'}</td>
         <td>${scoreBar}</td>
-        <td><span class="badge ${st.cls}">${st.icon} ${st.label}</span></td>
-        <td>
-          <div class="act-btns">
-            ${c.telefone ? `<button class="act-btn act-wpp" onclick="openWA('${c.id}','${(c.telefone||'').replace(/'/g,'')}','${(c.nome||'').replace(/'/g,'').replace(/"/g,'')}','${c.cidade||''}','${c.tipo||''}')">💬 WPP</button>` : ''}
-            ${c.email    ? `<button class="act-btn act-email" onclick="openEmail('${c.email}','${(c.nome||'').replace(/'/g,'')}')">📧 Email</button>` : ''}
-            <button class="act-btn act-status" onclick="openModal('${c.id}','${(c.nome||'').replace(/'/g,'')}','${c.telefone||''}','${c.status}')">🏷 Status</button>
-          </div>
-        </td>
+        <td>${statusBadge}</td>
       </tr>`;
     }).join('');
   }
+  const pag=document.getElementById('pagination');
+  pag.innerHTML=`<span>${start+1}–${Math.min(start+PAGE_SIZE,total)} de ${total}</span>
+    <div class="page-btns">
+      <button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>
+      ${Array.from({length:Math.min(pages,7)},(_,i)=>{
+        const p=i+1;
+        return `<button class="page-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+      }).join('')}
+      ${pages>7?`<span style="color:var(--text3);font-size:11px">…${pages}</span>`:''}
+      <button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage>=pages?'disabled':''}>›</button>
+    </div>`;
+}
 
-  // Pagination
-  if (meta) {
-    const { total, page, pageSize, pages } = meta;
-    const start = (page-1)*pageSize;
-    document.getElementById('pagination').innerHTML = `
-      <span>${start+1}–${Math.min(start+pageSize,total)} de ${total}</span>
-      <div class="page-btns">
-        <button class="pbtn" onclick="loadContacts(${page-1})" ${page<=1?'disabled':''}>‹</button>
-        ${Array.from({length:Math.min(pages,7)},(_,i)=>{
-          const p=i+1;
-          return `<button class="pbtn ${p===page?'active':''}" onclick="loadContacts(${p})">${p}</button>`;
+function goPage(p){currentPage=p;renderTable();}
+
+// ══════════════════════════════════
+//  COMPARE
+// ══════════════════════════════════
+function buildCompare(){
+  const states=[...new Set(allContacts.map(c=>c.estado))].filter(s=>s!=='?');
+  const cgrid=document.getElementById('compare-grid');
+  cgrid.innerHTML=states.map(st=>{
+    const ss=stateStats(st);
+    const cls=STATE_COLORS[st]||'gold';
+    const validPct=ss.total?((ss.validos/ss.total)*100).toFixed(0):0;
+    const highPct=ss.total?((ss.high/ss.total)*100).toFixed(0):0;
+    return `<div class="compare-card ${cls}">
+      <h3>${STATE_ICONS[st]} ${STATE_LABELS[st]} (${st})</h3>
+      <div class="compare-row"><span class="lbl">Total importado</span><span class="val">${ss.total}</span></div>
+      <div class="compare-row"><span class="lbl">Válidos</span><span class="val" style="color:var(--green)">${ss.validos}</span></div>
+      <div class="compare-row"><span class="lbl">Duplicados</span><span class="val" style="color:var(--red)">${ss.dupls}</span></div>
+      <div class="compare-row"><span class="lbl">Sem email</span><span class="val" style="color:var(--yellow)">${ss.semEmail}</span></div>
+      <div class="compare-row"><span class="lbl">Alta prioridade</span><span class="val" style="color:var(--blue)">${ss.high}</span></div>
+      <div class="compare-row"><span class="lbl">Score médio</span><span class="val">${ss.avgScore}/100</span></div>
+      <div class="bar-row">
+        <div class="bar-label"><span>% Válidos</span><span>${validPct}%</span></div>
+        <div class="bar-track"><div class="bar-fill ${cls}" style="width:${validPct}%"></div></div>
+      </div>
+      <div class="bar-row" style="margin-top:8px">
+        <div class="bar-label"><span>% Alta prioridade</span><span>${highPct}%</span></div>
+        <div class="bar-track"><div class="bar-fill ${cls}" style="width:${highPct}%"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const sorted=[...states].sort((a,b)=>stateStats(b).avgScore-stateStats(a).avgScore);
+  document.getElementById('ranking-grid').innerHTML=`
+    <div class="table-wrapper"><div class="table-scroll"><table>
+      <thead><tr>
+        <th>#</th><th>Estado</th><th>Total</th><th>Válidos</th><th>% Válidos</th>
+        <th>Alta Prior.</th><th>Score Médio</th>
+      </tr></thead>
+      <tbody>${sorted.map((st,i)=>{
+        const ss=stateStats(st);
+        const pct=ss.total?((ss.validos/ss.total)*100).toFixed(0):0;
+        const dotColor={SC:'var(--sc)',PR:'var(--pr)',SP:'var(--sp)'}[st]||'var(--text3)';
+        return `<tr>
+          <td style="font-family:var(--mono);color:var(--text3)">${i+1}</td>
+          <td><span style="color:${dotColor};font-weight:700">${STATE_ICONS[st]} ${st} – ${STATE_LABELS[st]}</span></td>
+          <td style="font-family:var(--mono)">${ss.total}</td>
+          <td style="color:var(--green);font-family:var(--mono)">${ss.validos}</td>
+          <td><div class="score-bar"><div class="score-track"><div class="score-fill" style="width:${pct}%;background:var(--${STATE_COLORS[st]||'gold'})"></div></div><span class="score-num">${pct}%</span></div></td>
+          <td style="color:var(--blue);font-family:var(--mono)">${ss.high}</td>
+          <td><div class="score-bar"><div class="score-track"><div class="score-fill" style="width:${ss.avgScore}%;background:var(--${STATE_COLORS[st]||'gold'})"></div></div><span class="score-num">${ss.avgScore}</span></div></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div></div>`;
+}
+
+// ══════════════════════════════════
+//  WHATSAPP
+// ══════════════════════════════════
+function buildWhatsApp(filterState='all'){
+  const states=filterState==='all'
+    ?[...new Set(allContacts.map(c=>c.estado))].filter(s=>s!=='?')
+    :[filterState];
+  document.getElementById('wa-grid').innerHTML=states.map(st=>{
+    const contacts=allContacts.filter(c=>c.estado===st&&c.status==='valido'&&c.score>=50).slice(0,5);
+    const cls=STATE_COLORS[st]||'gold';
+    if(!contacts.length) return `<div class="wa-card">
+      <div class="wa-card-header ${cls}"><h3>${STATE_ICONS[st]} ${STATE_LABELS[st]} (${st})</h3></div>
+      <div class="wa-card-body" style="color:var(--text3);font-size:13px;padding:24px">Nenhum contato válido com score ≥ 50.</div>
+    </div>`;
+    return `<div class="wa-card">
+      <div class="wa-card-header ${cls}">
+        <h3>${STATE_ICONS[st]} ${STATE_LABELS[st]} (${st})</h3>
+        <button class="btn-copy" onclick="downloadWA('${st}')">⬇ Baixar todos</button>
+      </div>
+      <div class="wa-card-body">
+        ${contacts.map(c=>{
+          const msg=buildWAMsg(c);
+          const msgId='msg-'+Math.random().toString(36).slice(2,8);
+          return `<div class="wa-contact">
+            <div class="cname">${c.nome}</div>
+            <div class="cphone">${c.telefone||'—'} · ${c.cidade||'—'}</div>
+            <div class="wa-msg-box" id="${msgId}">${msg}</div>
+            <button class="btn-copy" onclick="copyMsg('${msgId}')">📋 Copiar</button>
+          </div>`;
         }).join('')}
-        ${pages>7?`<span style="color:var(--text3);font-size:11px">…${pages}</span>`:''}
-        <button class="pbtn" onclick="loadContacts(${page+1})" ${page>=pages?'disabled':''}>›</button>
-      </div>`;
-  }
-}
-
-// ══════════════════════════════════
-//  ACTIONS — WPP / EMAIL
-// ══════════════════════════════════
-function buildWAMsg(c) {
-  return `Olá, bom dia! 😊\n\nSou da *Gutowski Cobrança Garantida*, especialista em redução de inadimplência condominial.\n\nIdentificamos que ${c.nome||'seu condomínio'} pode se beneficiar do nosso modelo de *garantia de receita* — onde o condomínio recebe em dia, independente da inadimplência.\n\nPodemos conversar rapidamente? 🙏`;
-}
-
-function buildEmailMsg(c) {
-  return `Olá,\n\nSou da Gutowski Cobrança Garantida, empresa especializada em redução de inadimplência condominial em SC, PR e SP.\n\nGostaríamos de apresentar nossa solução de garantia de receita para ${c.nome||'seu condomínio'}.\n\nPodemos agendar uma conversa rápida?\n\nAtenciosamente,\nEquipe Gutowski`;
-}
-
-function openWA(id, phone, nome, cidade, tipo) {
-  const msg = buildWAMsg({ nome, cidade, tipo });
-  const url = `https://wa.me/55${phone.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`;
-  window.open(url, '_blank');
-  // auto-atualiza para EM_ANDAMENTO se ainda PENDENTE
-  updateStatusSilent(id, 'EM_ANDAMENTO', 'WhatsApp enviado');
-}
-
-function openEmail(email, nome) {
-  const msg = buildEmailMsg({ nome });
-  const url = `mailto:${email}?subject=Gutowski+Cobrança+Garantida&body=${encodeURIComponent(msg)}`;
-  window.location.href = url;
-  updateStatusSilent(id, 'EM_ANDAMENTO', 'Email enviado');
-}
-
-async function updateStatusSilent(id, status, note) {
-  try {
-    await api(`/api/contacts/${id}/status`, 'PATCH', { status, note });
-    loadStats();
-  } catch {}
-}
-
-// ══════════════════════════════════
-//  STATUS MODAL
-// ══════════════════════════════════
-async function openModal(id, nome, phone, currentStatus) {
-  modalContactId = id;
-  selectedStatus = null;
-  document.getElementById('modal-contact-name').textContent = nome;
-  document.getElementById('modal-contact-sub').textContent = `📞 ${phone||'sem telefone'}`;
-  document.getElementById('modal-note').value = '';
-  // reset selections
-  document.querySelectorAll('.status-opt').forEach(b => {
-    b.classList.remove('selected');
-    if (b.dataset.status === currentStatus) b.classList.add('selected');
-    selectedStatus = currentStatus;
-  });
-  document.getElementById('status-modal').classList.add('open');
-
-  // load history
-  document.getElementById('modal-history').innerHTML = '<div style="color:var(--text3);font-size:12px">Carregando...</div>';
-  try {
-    const { data } = await api(`/api/contacts/${id}/history`);
-    document.getElementById('modal-history').innerHTML = data.length
-      ? data.map(h => `
-        <div class="history-item">
-          <div class="history-dot"></div>
-          <div>
-            <div>${STATUS_LABELS[h.newStatus]?.icon||''} <strong>${STATUS_LABELS[h.newStatus]?.label||h.newStatus}</strong>${h.note ? ` — ${h.note}` : ''}</div>
-            <div class="history-meta">${h.user?.name||'—'} · ${new Date(h.createdAt).toLocaleString('pt-BR')}</div>
-          </div>
-        </div>`).join('')
-      : '<div style="color:var(--text3);font-size:12px">Nenhuma atualização ainda.</div>';
-  } catch {}
-}
-
-function closeModal() {
-  document.getElementById('status-modal').classList.remove('open');
-}
-
-function selectStatus(btn) {
-  document.querySelectorAll('.status-opt').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  selectedStatus = btn.dataset.status;
-}
-
-async function saveStatus() {
-  if (!selectedStatus || !modalContactId) return;
-  const note = document.getElementById('modal-note').value.trim();
-  const btn = document.getElementById('btn-save-status');
-  btn.disabled = true;
-  try {
-    await api(`/api/contacts/${modalContactId}/status`, 'PATCH', { status: selectedStatus, note });
-    toast('Status atualizado!', 'success');
-    closeModal();
-    loadContacts(currentPage);
-    loadStats();
-  } catch (e) {
-    toast('Erro: ' + e.message, 'error');
-  } finally {
-    btn.disabled = false;
-  }
-}
-
-document.getElementById('status-modal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeModal();
-});
-
-// ══════════════════════════════════
-//  UPLOAD
-// ══════════════════════════════════
-let filesToUpload = [];
-
-function handleDragOver(e) { e.preventDefault(); document.getElementById('upload-zone').classList.add('drag-over'); }
-function handleDragLeave()  { document.getElementById('upload-zone').classList.remove('drag-over'); }
-function handleDrop(e)      { e.preventDefault(); document.getElementById('upload-zone').classList.remove('drag-over'); addFiles([...e.dataTransfer.files]); }
-function handleFileSelect(e){ addFiles([...e.target.files]); }
-
-function addFiles(files) {
-  const ok = files.filter(f => f.name.match(/\.(csv|txt)$/i));
-  if (ok.length !== files.length) toast('Apenas CSV e TXT.', 'error');
-  ok.forEach(f => { if (!filesToUpload.find(x=>x.name===f.name)) filesToUpload.push(f); });
-  renderFilesList();
-}
-
-function removeFile(i) { filesToUpload.splice(i,1); renderFilesList(); }
-
-function renderFilesList() {
-  const list = document.getElementById('files-list');
-  const btn  = document.getElementById('btn-upload');
-  if (!filesToUpload.length) { list.innerHTML=''; btn.disabled=true; return; }
-  list.innerHTML = filesToUpload.map((f,i) => `
-    <div class="file-item" id="fitem-${i}">
-      <div class="file-item-left">
-        <span style="font-size:20px">${f.name.endsWith('.csv')?'📋':'📄'}</span>
-        <div><div class="fname">${f.name}</div><div class="fmeta">${(f.size/1024).toFixed(1)} KB</div></div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <span class="fstatus pending" id="fstatus-${i}">Aguardando</span>
-        <button onclick="removeFile(${i})" style="background:transparent;border:none;color:var(--text3);cursor:pointer">✕</button>
-      </div>
-    </div>`).join('');
-  btn.disabled = false;
+    </div>`;
+  }).join('');
 }
 
-async function uploadFiles() {
-  if (!filesToUpload.length) return;
-  const estado = document.getElementById('import-state').value;
-  const btn = document.getElementById('btn-upload');
-  btn.disabled = true;
-  document.getElementById('prog-wrap').style.display = 'block';
+function filterWaState(state,btn){
+  document.querySelectorAll('#state-bar-wa .state-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); buildWhatsApp(state);
+}
 
-  const steps = [
-    { id:'p1', label:`Enviando arquivos para o servidor...` },
-    { id:'p2', label:'Processando e higienizando no backend...' },
-    { id:'p3', label:'Detectando duplicatas contra o banco...' },
-    { id:'p4', label:'Salvando contatos no PostgreSQL...' },
-  ];
-  document.getElementById('prog-steps').innerHTML = steps.map(s =>
-    `<div class="prog-step waiting" id="${s.id}"><span class="sicon">⏳</span><span>${s.label}</span></div>`
-  ).join('');
+function buildWAMsg(c){
+  return `Olá, bom dia! 😊\n\nSou da *Gutowski Cobrança Garantida*, especialista em redução de inadimplência condominial.\n\nIdentificamos que ${c.nome}${c.tipo?` (${c.tipo})`:''} pode se beneficiar do nosso modelo de *garantia de receita* — onde o condomínio recebe em dia, independente da inadimplência.\n\n📍 Atendemos em ${c.cidade||'sua região'}.\n\nPodemos marcar uma conversa rápida? 🙏`;
+}
 
-  async function step(id, delay, fn) {
-    const el = document.getElementById(id);
-    el.className='prog-step running';
-    el.querySelector('.sicon').innerHTML='<span class="spinning">⚙️</span>';
-    await sleep(delay); await fn();
-    el.className='prog-step done';
-    el.querySelector('.sicon').textContent='✅';
-  }
+function copyMsg(id){
+  const text=document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(()=>toast('Mensagem copiada!','success'));
+}
 
-  await step('p1', 200, async () => {});
-
-  let totalImported = 0, totalValid = 0, totalDups = 0;
-
-  for (let i = 0; i < filesToUpload.length; i++) {
-    const f = filesToUpload[i];
-    const el = document.getElementById(`fstatus-${i}`);
-    el.className='fstatus loading'; el.textContent='Enviando...';
-    try {
-      const fd = new FormData();
-      fd.append('file', f);
-      fd.append('estado', estado);
-      const res = await apiUpload('/api/imports', fd);
-      el.className='fstatus ok'; el.textContent=`✅ ${res.total} linhas`;
-      totalImported += res.total;
-      totalValid    += res.valid;
-      totalDups     += res.duplicates;
-    } catch(e) {
-      el.className='fstatus error'; el.textContent='❌ Erro';
-      toast(`Erro em ${f.name}: ${e.message}`, 'error');
-    }
-  }
-
-  await step('p2', 300, async () => {});
-  await step('p3', 300, async () => {});
-  await step('p4', 200, async () => {});
-
-  toast(`✅ ${totalImported} contatos importados · ${totalValid} válidos · ${totalDups} duplicados`, 'success');
-  filesToUpload = [];
-  renderFilesList();
-  document.getElementById('prog-wrap').style.display = 'none';
-  btn.disabled = false;
-  loadStats();
-  loadContacts(1);
-  loadImports();
-
-  // switch to contacts
-  await sleep(800);
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-tab')[1].classList.add('active');
-  document.getElementById('nav-contacts').classList.add('active');
+function downloadWA(state){
+  const contacts=allContacts.filter(c=>c.estado===state&&c.status==='valido'&&c.score>=50);
+  const text=contacts.map(c=>`=== ${c.nome} · ${c.telefone} ===\n${buildWAMsg(c)}\n`).join('\n');
+  currentExportData=text;
+  currentExportFilename=`roteiros_whatsapp_${state}_${dateStr()}.txt`;
+  const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=currentExportFilename;a.click();
+  URL.revokeObjectURL(url);
+  toast(`Roteiros ${state} baixados!`,'success');
 }
 
 // ══════════════════════════════════
-//  IMPORT HISTORY
+//  EXPORT
 // ══════════════════════════════════
-async function loadImports() {
-  try {
-    const { data } = await api('/api/imports');
-    const el = document.getElementById('imports-list');
-    if (!data.length) {
-      el.innerHTML = '<div class="empty-state"><div class="eicon">📁</div><p>Nenhuma importação ainda.</p></div>';
-      return;
-    }
-    el.innerHTML = data.map(imp => {
-      const stColor = {SC:'var(--sc)',PR:'var(--pr)',SP:'var(--sp)'}[imp.estado]||'var(--gold)';
-      return `<div class="import-item">
-        <div class="import-info">
-          <div class="import-name">📋 ${imp.filename}</div>
-          <div class="import-meta">${new Date(imp.createdAt).toLocaleString('pt-BR')} · por ${imp.user?.name||'—'}</div>
-        </div>
-        <div class="import-stats">
-          <span style="color:${stColor};font-weight:700;font-size:12px">${STATE_ICONS[imp.estado]||''} ${imp.estado}</span>
-          <span class="badge b-gold">${imp.totalRows} total</span>
-          <span class="badge b-green">${imp.validRows} válidos</span>
-          <span class="badge b-red">${imp.dupRows} dups</span>
-        </div>
-      </div>`;
-    }).join('');
-  } catch (e) { toast('Erro ao carregar importações.', 'error'); }
+function exportByState(state,filter){
+  let data=allContacts.filter(c=>c.estado===state);
+  if(filter==='valid') data=data.filter(c=>c.status==='valido');
+  if(!data.length){toast(`Sem dados para ${state}.`,'error');return;}
+  const csv=buildCSV(data);
+  currentExportData=csv;
+  currentExportFilename=`mailing_${state.toLowerCase()}_${filter}_${dateStr()}.csv`;
+  showPreview(csv,data.length);
+}
+
+function exportAll(filter){
+  let data=allContacts;
+  if(filter==='high') data=data.filter(c=>c.score>=70);
+  if(!data.length){toast('Sem dados.','error');return;}
+  const csv=buildCSV(data);
+  currentExportData=csv;
+  currentExportFilename=`mailing_completo_${filter}_${dateStr()}.csv`;
+  showPreview(csv,data.length);
+}
+
+function buildCSV(data){
+  const h='Nome,Estado,Tipo,Cidade,Telefone,Email,Fonte,Score,Status';
+  const rows=data.map(c=>[
+    `"${c.nome}"`,`"${c.estado}"`,`"${c.tipo}"`,`"${c.cidade}"`,
+    `"${c.telefone}"`,`"${c.email}"`,`"${c.origem}"`,c.score,c.status
+  ].join(','));
+  return[h,...rows].join('\n');
+}
+
+function showPreview(csv,count){
+  document.getElementById('export-preview-text').textContent=
+    csv.split('\n').slice(0,10).join('\n')+`\n... (${count} registros total)`;
+  document.getElementById('export-preview').style.display='block';
+  toast(`${count} registros prontos para download.`,'success');
+}
+
+function exportReport(){
+  const states=[...new Set(allContacts.map(c=>c.estado))].filter(s=>s!=='?');
+  const total=allContacts.length;
+  const stateBlocks=states.map(st=>{
+    const ss=stateStats(st);
+    return `<h2 style="margin:28px 0 10px;color:#${st==='SC'?'0284c7':st==='PR'?'059669':'ea580c'}">${STATE_ICONS[st]} ${STATE_LABELS[st]} (${st})</h2>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px">
+      ${[['Total',ss.total,'#b8952e'],['Válidos',ss.validos,'#16a34a'],['Duplicados',ss.dupls,'#dc2626'],
+         ['Sem Email',ss.semEmail,'#ca8a04'],['Score Médio',ss.avgScore+'/100','#2563eb']].map(([l,v,c])=>
+        `<div style="background:#fff;border-radius:8px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);border:1px solid #e4e0d4">
+          <div style="font-size:24px;font-weight:700;color:${c}">${v}</div>
+          <div style="font-size:11px;color:#666;margin-top:3px">${l}</div>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+  const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+<title>Relatório Gutowski Mailing Multi-Estado</title>
+<style>body{font-family:Arial,sans-serif;background:#faf9f5;color:#1c1a12;padding:40px;max-width:1000px;margin:0 auto}
+h1{color:#b8952e;border-bottom:2px solid #b8952e;padding-bottom:12px}
+.footer{margin-top:40px;font-size:12px;color:#999;text-align:center}</style>
+</head><body>
+<h1>📊 Relatório de Mailing Multi-Estado</h1>
+<p style="color:#666">Gerado em: ${new Date().toLocaleString('pt-BR')} · Gutowski Cobrança Garantida</p>
+<p style="margin-top:8px"><strong>Total geral: ${total} contatos · ${states.join(' + ')}</strong></p>
+${stateBlocks}
+<div class="footer">Gutowski Cobrança Garantida · SINDIGROUP · ${new Date().getFullYear()}</div>
+</body></html>`;
+  currentExportData=html;
+  currentExportFilename=`relatorio_multiestado_${dateStr()}.html`;
+  document.getElementById('export-preview-text').textContent=`Relatório HTML gerado para ${states.join(', ')}.\nClique em Baixar para obter o arquivo.`;
+  document.getElementById('export-preview').style.display='block';
+  toast('Relatório multi-estado pronto!','success');
+}
+
+function triggerDownload(){
+  if(!currentExportData) return;
+  const blob=new Blob([currentExportData],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=currentExportFilename;a.click();
+  URL.revokeObjectURL(url);
+  toast('Download: '+currentExportFilename,'success');
 }
 
 // ══════════════════════════════════
 //  UTILS
 // ══════════════════════════════════
-function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
+function cleanEmail(e){
+  if(!e) return '';
+  e=e.trim().toLowerCase();
+  if(['não disponível','nao disponivel','-','n/a',''].includes(e)) return '';
+  return e.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)?e:'';
+}
+function cleanPhone(p){
+  if(!p) return '';
+  p=p.trim();
+  if(['Não disponível','-','n/a',''].includes(p)) return '';
+  return p.replace(/[^\d\(\)\-\+\s]/g,'').trim();
+}
+function normalizeKey(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'');}
+function readFile(f){return new Promise(r=>{const rd=new FileReader();rd.onload=e=>r(e.target.result);rd.readAsText(f,'UTF-8');});}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function dateStr(){return new Date().toISOString().slice(0,10).replace(/-/g,'');}
 
-function toast(msg, type='success') {
-  const c = document.getElementById('toast-container');
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.textContent = msg;
+function toast(msg,type='success'){
+  const c=document.getElementById('toast-container');
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;el.textContent=msg;
   c.appendChild(el);
-  setTimeout(()=>el.remove(), 5000);
+  setTimeout(()=>el.remove(),4000);
 }
 </script>
 </body>
