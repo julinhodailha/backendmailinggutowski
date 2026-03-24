@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gutowski · Mailing System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0a0f;--surface:#111118;--surface2:#16161f;--surface3:#1c1c28;
+  --border:#1e1e2e;--border2:#252538;
+  --gold:#c9a84c;--gold2:#e8c96a;--gold-dim:rgba(201,168,76,.13);--gold-glow:rgba(201,168,76,.05);
+  --text:#e8e8f0;--text2:#9090a8;--text3:#5a5a72;
+  --green:#22c55e;--green-dim:rgba(34,197,94,.12);
+  --red:#ef4444;--red-dim:rgba(239,68,68,.12);
+  --blue:#3b82f6;--blue-dim:rgba(59,130,246,.12);
+  --yellow:#eab308;--yellow-dim:rgba(234,179,8,.12);
+  --purple:#a855f7;--purple-dim:rgba(168,85,247,.12);
+  --sc:#0ea5e9;--sc-dim:rgba(14,165,233,.12);
+  --pr:#10b981;--pr-dim:rgba(16,185,129,.12);
+  --sp:#f97316;--sp-dim:rgba(249,115,22,.12);
+  --r:10px;--font:'Sora',sans-serif;--mono:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── LOGIN ── */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative}
+#login-screen::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(201,168,76,.07) 0%,transparent 70%);pointer-events:none}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;
+  padding:52px 46px;width:440px;max-width:93vw;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.6)}
+.login-card::before{content:'';position:absolute;top:0;left:15%;right:15%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-logo .brand{font-size:24px;font-weight:700;letter-spacing:-.5px}
+.login-logo .brand span{color:var(--gold)}
+.login-logo .sub{font-size:11px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px}
+.greeting{background:var(--gold-glow);border:1px solid rgba(201,168,76,.18);border-radius:8px;
+  padding:12px 16px;font-size:13px;color:var(--gold2);text-align:center;margin-bottom:28px;line-height:1.6}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:10px;font-weight:700;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--text3);margin-bottom:7px}
+.form-group input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+  padding:12px 16px;font-family:var(--font);font-size:14px;color:var(--text);outline:none;transition:border-color .2s}
+.form-group input:focus{border-color:var(--gold)}
+.form-group input::placeholder{color:var(--text3)}
+.btn-primary{background:var(--gold);color:#08080e;border:none;border-radius:8px;
+  padding:13px 26px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
+  transition:all .2s;display:inline-flex;align-items:center;gap:7px}
+.btn-primary:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 8px 20px rgba(201,168,76,.25)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-primary.full{width:100%;justify-content:center}
+.login-error{background:var(--red-dim);border:1px solid rgba(239,68,68,.3);border-radius:6px;
+  padding:10px 14px;font-size:13px;color:var(--red);margin-top:12px;display:none;text-align:center}
+
+/* ── APP ── */
+#app{display:none;min-height:100vh}
+.topbar{height:54px;background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 24px;
+  position:sticky;top:0;z-index:200}
+.topbar-brand{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.topbar-brand span{color:var(--gold)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-user{font-size:12px;color:var(--text2);background:var(--surface2);
+  border:1px solid var(--border);border-radius:6px;padding:5px 12px}
+.btn-sm{background:transparent;border:1px solid var(--border2);border-radius:6px;
+  padding:5px 12px;font-family:var(--font);font-size:12px;color:var(--text3);cursor:pointer;transition:all .2s}
+.btn-sm:hover{border-color:var(--red);color:var(--red)}
+.nav{display:flex;gap:2px;background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 24px;overflow-x:auto}
+.nav-tab{padding:14px 18px;font-size:13px;font-weight:500;color:var(--text3);
+  cursor:pointer;border:none;background:transparent;font-family:var(--font);
+  border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.nav-tab:hover{color:var(--text2)}
+.nav-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.main{max-width:1400px;margin:0 auto;padding:28px 24px}
+.section{display:none}.section.active{display:block}
+.section-header{margin-bottom:22px}
+.section-header h2{font-size:20px;font-weight:600;letter-spacing:-.3px;margin-bottom:4px}
+.section-header p{font-size:13px;color:var(--text2)}
+
+/* ── STATE BAR ── */
+.state-bar{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.state-btn{display:flex;align-items:center;gap:7px;padding:8px 16px;border-radius:8px;
+  border:1px solid var(--border2);background:var(--surface);font-family:var(--font);
+  font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--text2)}
+.state-btn:hover{border-color:var(--gold);color:var(--text)}
+.sdot{width:7px;height:7px;border-radius:50%}
+.state-btn.active.sc{background:var(--sc-dim);border-color:rgba(14,165,233,.35);color:var(--sc)}
+.state-btn.active.pr{background:var(--pr-dim);border-color:rgba(16,185,129,.35);color:var(--pr)}
+.state-btn.active.sp{background:var(--sp-dim);border-color:rgba(249,115,22,.35);color:var(--sp)}
+.state-btn.active.all{background:var(--gold-dim);border-color:rgba(201,168,76,.35);color:var(--gold)}
+.scnt{font-family:var(--mono);font-size:10px;opacity:.7}
+
+/* ── UPLOAD ── */
+.upload-zone{border:2px dashed var(--border2);border-radius:12px;padding:44px 32px;
+  text-align:center;cursor:pointer;transition:all .25s;background:var(--surface);position:relative}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--gold);background:var(--gold-glow)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:36px;margin-bottom:10px}
+.upload-zone h3{font-size:16px;font-weight:600;margin-bottom:6px}
+.upload-zone p{font-size:13px;color:var(--text2)}
+.hint{margin-top:8px;font-size:11px;color:var(--text3);font-family:var(--mono)}
+.assign-row{display:flex;align-items:center;gap:10px;margin:14px 0;
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;flex-wrap:wrap}
+.assign-row label{font-size:12px;color:var(--text2);font-weight:600}
+.sel{background:var(--surface2);border:1px solid var(--border2);border-radius:6px;
+  padding:7px 12px;font-family:var(--font);font-size:13px;color:var(--text);outline:none;cursor:pointer}
+.sel:focus{border-color:var(--gold)}
+.files-list{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.file-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  animation:fadeUp .25s ease;flex-wrap:wrap}
+.file-item-left{display:flex;align-items:center;gap:10px}
+.fname{font-size:13px;font-weight:500}
+.fmeta{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.fbadge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px}
+.fstatus{font-size:11px;padding:3px 10px;border-radius:99px;font-weight:600}
+.fstatus.ok{background:var(--green-dim);color:var(--green)}
+.fstatus.pending{background:var(--yellow-dim);color:var(--yellow)}
+.fstatus.error{background:var(--red-dim);color:var(--red)}
+.fstatus.loading{background:var(--blue-dim);color:var(--blue)}
+
+/* ── PROGRESS ── */
+.prog-wrap{margin-top:20px}
+.prog-step{display:flex;align-items:center;gap:12px;padding:11px 16px;border-radius:8px;
+  background:var(--surface);border:1px solid var(--border);font-size:13px;margin-bottom:8px;transition:all .3s}
+.prog-step.running{border-color:var(--gold);background:var(--gold-glow)}
+.prog-step.done{border-color:rgba(34,197,94,.3);background:var(--green-dim);color:var(--green)}
+.prog-step.waiting{color:var(--text3)}
+.sicon{width:20px;text-align:center;font-size:14px}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:18px 20px;position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat-card.gold::after{background:var(--gold)}
+.stat-card.green::after{background:var(--green)}
+.stat-card.red::after{background:var(--red)}
+.stat-card.blue::after{background:var(--blue)}
+.stat-card.yellow::after{background:var(--yellow)}
+.stat-card.sc-c::after{background:var(--sc)}
+.stat-card.pr-c::after{background:var(--pr)}
+.stat-card.sp-c::after{background:var(--sp)}
+.slabel{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.svalue{font-size:28px;font-weight:700;letter-spacing:-1px;font-family:var(--mono)}
+.ssub{font-size:11px;color:var(--text3);margin-top:3px}
+
+/* ── TABLE ── */
+.tcontrols{display:flex;align-items:center;justify-content:space-between;
+  gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.search-input{background:var(--surface);border:1px solid var(--border2);border-radius:8px;
+  padding:9px 14px;font-family:var(--font);font-size:13px;color:var(--text);
+  width:260px;outline:none;transition:border-color .2s}
+.search-input:focus{border-color:var(--gold)}
+.search-input::placeholder{color:var(--text3)}
+.twrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:800px}
+thead tr{border-bottom:1px solid var(--border)}
+th{padding:11px 14px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;
+  letter-spacing:.8px;text-align:left;background:var(--surface2);white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--text2)}
+td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700}
+.b-green{background:var(--green-dim);color:var(--green)}
+.b-red{background:var(--red-dim);color:var(--red)}
+.b-yellow{background:var(--yellow-dim);color:var(--yellow)}
+.b-blue{background:var(--blue-dim);color:var(--blue)}
+.b-gold{background:var(--gold-dim);color:var(--gold)}
+.b-purple{background:var(--purple-dim);color:var(--purple)}
+.b-gray{background:var(--surface2);color:var(--text3);border:1px solid var(--border2)}
+.score-bar{display:flex;align-items:center;gap:7px}
+.strack{width:50px;height:4px;background:var(--border2);border-radius:99px;overflow:hidden}
+.sfill{height:100%;border-radius:99px}
+.snum{font-size:11px;font-family:var(--mono);color:var(--text2)}
+.pagination{display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--text2)}
+.page-btns{display:flex;gap:4px}
+.pbtn{background:transparent;border:1px solid var(--border2);border-radius:5px;
+  padding:4px 10px;font-family:var(--font);font-size:11px;color:var(--text3);cursor:pointer;transition:all .15s}
+.pbtn:hover{border-color:var(--gold);color:var(--gold)}
+.pbtn.active{background:var(--gold-dim);border-color:rgba(201,168,76,.3);color:var(--gold)}
+.pbtn:disabled{opacity:.3;cursor:not-allowed}
+
+/* ── ACTION BTNS ── */
+.act-btns{display:flex;gap:5px}
+.act-btn{border:none;border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;
+  font-family:var(--font);font-weight:600;transition:all .15s;white-space:nowrap}
+.act-wpp{background:rgba(34,197,94,.15);color:var(--green)}
+.act-wpp:hover{background:rgba(34,197,94,.25)}
+.act-email{background:rgba(59,130,246,.15);color:var(--blue)}
+.act-email:hover{background:rgba(59,130,246,.25)}
+.act-status{background:var(--gold-dim);color:var(--gold)}
+.act-status:hover{background:rgba(201,168,76,.22)}
+
+/* ── STATUS MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;
+  display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:28px;width:480px;max-width:95vw;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.5)}
+.modal h3{font-size:16px;font-weight:600;margin-bottom:4px}
+.modal .sub{font-size:12px;color:var(--text2);margin-bottom:20px}
+.modal .close{position:absolute;top:16px;right:16px;background:transparent;border:none;
+  color:var(--text3);cursor:pointer;font-size:18px;line-height:1}
+.modal .close:hover{color:var(--text)}
+.status-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.status-opt{border:1px solid var(--border2);border-radius:8px;padding:10px 14px;
+  cursor:pointer;transition:all .2s;background:transparent;font-family:var(--font);
+  font-size:13px;font-weight:600;text-align:left;color:var(--text2)}
+.status-opt:hover{border-color:var(--gold);color:var(--text)}
+.status-opt.selected{border-color:var(--gold);background:var(--gold-dim);color:var(--gold)}
+.status-opt.bom{border-color:rgba(34,197,94,.3)}
+.status-opt.bom.selected,.status-opt.bom:hover{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.status-opt.and{border-color:rgba(59,130,246,.3)}
+.status-opt.and.selected,.status-opt.and:hover{border-color:var(--blue);background:var(--blue-dim);color:var(--blue)}
+.status-opt.conv{border-color:rgba(168,85,247,.3)}
+.status-opt.conv.selected,.status-opt.conv:hover{border-color:var(--purple);background:var(--purple-dim);color:var(--purple)}
+.status-opt.nex{border-color:rgba(239,68,68,.3)}
+.status-opt.nex.selected,.status-opt.nex:hover{border-color:var(--red);background:var(--red-dim);color:var(--red)}
+.status-opt.sem{border-color:rgba(234,179,8,.3)}
+.status-opt.sem.selected,.status-opt.sem:hover{border-color:var(--yellow);background:var(--yellow-dim);color:var(--yellow)}
+.status-opt.desc{border-color:rgba(90,90,114,.3)}
+.status-opt.desc.selected,.status-opt.desc:hover{border-color:var(--text3);background:rgba(90,90,114,.1);color:var(--text3)}
+.note-input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+  padding:10px 14px;font-family:var(--font);font-size:13px;color:var(--text);
+  outline:none;resize:vertical;min-height:72px;margin-bottom:14px}
+.note-input:focus{border-color:var(--gold)}
+.note-input::placeholder{color:var(--text3)}
+
+/* ── HISTORY ── */
+.history-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.history-item:last-child{border-bottom:none}
+.history-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);margin-top:4px;flex-shrink:0}
+.history-meta{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* ── IMPORT HISTORY ── */
+.import-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:16px 18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.import-info{display:flex;flex-direction:column;gap:3px}
+.import-name{font-size:14px;font-weight:600}
+.import-meta{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.import-stats{display:flex;gap:10px;flex-wrap:wrap}
+
+/* ── MISC ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinning{display:inline-block;animation:spin 1s linear infinite}
+.empty-state{padding:60px 20px;text-align:center;color:var(--text3)}
+.empty-state .eicon{font-size:38px;margin-bottom:12px}
+.empty-state p{font-size:14px}
+.toast-container{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:7px}
+.toast{background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  padding:11px 18px;font-size:13px;animation:fadeUp .25s ease;max-width:340px;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);display:flex;align-items:center;gap:8px}
+.toast.success{border-color:rgba(34,197,94,.4);color:var(--green)}
+.toast.error{border-color:rgba(239,68,68,.4);color:var(--red)}
+.toast.info{border-color:rgba(59,130,246,.4);color:var(--blue)}
+.loader{display:inline-block;width:14px;height:14px;border:2px solid rgba(201,168,76,.3);
+  border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin-right:6px}
+.tag-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tag-btn{padding:3px 11px;border-radius:99px;font-size:11px;font-weight:600;cursor:pointer;
+  border:1px solid var(--border2);background:transparent;color:var(--text3);font-family:var(--font);transition:all .15s}
+.tag-btn:hover{border-color:var(--gold);color:var(--gold)}
+.tag-btn.active{background:var(--gold-dim);border-color:rgba(201,168,76,.3);color:var(--gold)}
+.divider{height:1px;background:var(--border);margin:20px 0}
+</style>
+</head>
+<body>
+
+<!-- CONFIG: aponte para sua API no Render -->
+<script>
+  // 🔧 CONFIGURE AQUI — URL da sua API no Render
+  const API_URL = 'https://gutowski-mailing-api.onrender.com';
+  // Exemplo: 'https://gutowski-mailing-api.onrender.com'
+  // Troque pelo endereço real do seu serviço no Render
+</script>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="brand">Gutowski <span>·</span> Mailing</div>
+      <div class="sub">Sistema Multi-Estado · SC / PR / SP</div>
+    </div>
+    <div class="greeting" id="greeting-text"></div>
+    <div class="form-group">
+      <label>E-mail</label>
+      <input type="email" id="login-email" placeholder="admin@amanda" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-primary full" id="btn-login" onclick="doLogin()">Entrar</button>
+    <div class="login-error" id="login-error">Credenciais inválidas. Tente novamente.</div>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-brand">Gutowski <span>·</span> Mailing</div>
+    <div class="topbar-right">
+      <div class="topbar-user" id="user-label"></div>
+      <button class="btn-sm" onclick="doLogout()">Sair</button>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="nav-tab active" onclick="switchNav('dashboard',this)">📊 Dashboard</button>
+    <button class="nav-tab" onclick="switchNav('contacts',this)">📋 Contatos</button>
+    <button class="nav-tab" onclick="switchNav('import',this)">📥 Importar</button>
+    <button class="nav-tab" onclick="switchNav('imports',this)">📁 Histórico</button>
+  </div>
+  <div class="main">
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <div id="nav-dashboard" class="section active">
+      <div class="section-header">
+        <h2>Dashboard</h2>
+        <p>Visão geral do mailing por estado</p>
+      </div>
+      <div class="state-bar" id="dash-state-bar"></div>
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card gold"><div class="slabel">Total</div><div class="svalue" id="s-total">—</div></div>
+        <div class="stat-card green"><div class="slabel">Bom Lead</div><div class="svalue" id="s-bom">—</div></div>
+        <div class="stat-card blue"><div class="slabel">Em Andamento</div><div class="svalue" id="s-and">—</div></div>
+        <div class="stat-card purple"><div class="slabel">Convertidos</div><div class="svalue" id="s-conv" style="color:var(--purple)">—</div></div>
+        <div class="stat-card red"><div class="slabel">Não Existe</div><div class="svalue" id="s-nex">—</div></div>
+        <div class="stat-card yellow"><div class="slabel">Score Médio</div><div class="svalue" id="s-score">—</div></div>
+      </div>
+      <div id="dash-dist"></div>
+    </div>
+
+    <!-- ═══ CONTACTS ═══ -->
+    <div id="nav-contacts" class="section">
+      <div class="section-header">
+        <h2>Contatos</h2>
+        <p>Gerencie, qualifique e acione cada contato</p>
+      </div>
+      <div class="state-bar" id="contacts-state-bar"></div>
+      <div class="tcontrols">
+        <input type="text" class="search-input" id="search-input"
+               placeholder="🔍  Nome, cidade, telefone..." oninput="debounceSearch()">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <select class="sel" id="filter-status" onchange="loadContacts(1)">
+            <option value="">Todos os status</option>
+            <option value="PENDENTE">⏳ Pendente</option>
+            <option value="BOM_LEAD">⭐ Bom Lead</option>
+            <option value="EM_ANDAMENTO">🔄 Em Andamento</option>
+            <option value="CONVERTIDO">✅ Convertido</option>
+            <option value="NAO_EXISTE">❌ Não Existe</option>
+            <option value="SEM_INTERESSE">😐 Sem Interesse</option>
+            <option value="DESCARTADO">🗑 Descartado</option>
+          </select>
+          <select class="sel" id="filter-order" onchange="loadContacts(1)">
+            <option value="score">↓ Score</option>
+            <option value="nome">A-Z Nome</option>
+            <option value="updatedAt">↓ Atualizado</option>
+          </select>
+        </div>
+      </div>
+      <div class="tag-filter" id="city-tags"></div>
+      <div class="twrap">
+        <div class="tscroll">
+          <table>
+            <thead><tr>
+              <th>Nome</th>
+              <th>Estado</th>
+              <th>Tipo</th>
+              <th>Cidade</th>
+              <th>Telefone</th>
+              <th>Score</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr></thead>
+            <tbody id="table-body"><tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text3)">Carregando...</td></tr></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+
+    <!-- ═══ IMPORT ═══ -->
+    <div id="nav-import" class="section">
+      <div class="section-header">
+        <h2>Importar Mailing</h2>
+        <p>Envie CSV ou TXT — os contatos vão direto para o banco de dados</p>
+      </div>
+      <div class="assign-row">
+        <label>Estado do arquivo:</label>
+        <select class="sel" id="import-state">
+          <option value="SC">🔵 Santa Catarina (SC)</option>
+          <option value="PR" selected>🟢 Paraná (PR)</option>
+          <option value="SP">🟠 São Paulo (SP)</option>
+        </select>
+      </div>
+      <div class="upload-zone" id="upload-zone"
+           ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+        <input type="file" id="file-input" multiple accept=".csv,.txt" onchange="handleFileSelect(event)">
+        <div class="upload-icon">📂</div>
+        <h3>Arraste arquivos ou clique para selecionar</h3>
+        <p>Suporte a múltiplos arquivos simultâneos</p>
+        <div class="hint">.csv · .txt</div>
+      </div>
+      <div class="files-list" id="files-list"></div>
+      <button class="btn-primary" id="btn-upload" disabled onclick="uploadFiles()" style="margin-top:16px">
+        ⚡ Enviar ao Banco de Dados
+      </button>
+      <div class="prog-wrap" id="prog-wrap" style="display:none">
+        <div id="prog-steps"></div>
+      </div>
+    </div>
+
+    <!-- ═══ IMPORT HISTORY ═══ -->
+    <div id="nav-imports" class="section">
+      <div class="section-header">
+        <h2>Histórico de Importações</h2>
+        <p>Todos os arquivos enviados para o banco</p>
+      </div>
+      <div id="imports-list"><div class="empty-state"><div class="eicon">📁</div><p>Carregando...</p></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ STATUS MODAL ═══ -->
+<div class="modal-overlay" id="status-modal">
+  <div class="modal">
+    <button class="close" onclick="closeModal()">✕</button>
+    <h3 id="modal-contact-name">Contato</h3>
+    <div class="sub" id="modal-contact-sub"></div>
+    <div class="status-options">
+      <button class="status-opt bom"  data-status="BOM_LEAD"      onclick="selectStatus(this)">⭐ Bom Lead</button>
+      <button class="status-opt and"  data-status="EM_ANDAMENTO"  onclick="selectStatus(this)">🔄 Em Andamento</button>
+      <button class="status-opt conv" data-status="CONVERTIDO"    onclick="selectStatus(this)">✅ Convertido</button>
+      <button class="status-opt nex"  data-status="NAO_EXISTE"    onclick="selectStatus(this)">❌ Não Existe</button>
+      <button class="status-opt sem"  data-status="SEM_INTERESSE" onclick="selectStatus(this)">😐 Sem Interesse</button>
+      <button class="status-opt desc" data-status="DESCARTADO"    onclick="selectStatus(this)">🗑 Descartado</button>
+    </div>
+    <textarea class="note-input" id="modal-note" placeholder="Observação (opcional) — o que aconteceu neste contato?"></textarea>
+    <div style="display:flex;gap:8px">
+      <button class="btn-primary" id="btn-save-status" onclick="saveStatus()">Salvar</button>
+      <button class="btn-sm" onclick="closeModal()">Cancelar</button>
+    </div>
+    <div class="divider"></div>
+    <div style="font-size:12px;font-weight:700;color:var(--text3);margin-bottom:10px;letter-spacing:.8px;text-transform:uppercase">Histórico</div>
+    <div id="modal-history"></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ══════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════
+let token = null;
+let currentUser = null;
+let currentPage = 1;
+let currentStateFilter = 'all';
+let activeCityTags = new Set();
+let modalContactId = null;
+let selectedStatus = null;
+let searchTimer = null;
+let statsCounts = {};
+
+const STATUS_LABELS = {
+  PENDENTE:      { label:'Pendente',      icon:'⏳', cls:'b-gray'   },
+  BOM_LEAD:      { label:'Bom Lead',      icon:'⭐', cls:'b-green'  },
+  EM_ANDAMENTO:  { label:'Em Andamento',  icon:'🔄', cls:'b-blue'   },
+  CONVERTIDO:    { label:'Convertido',    icon:'✅', cls:'b-purple' },
+  NAO_EXISTE:    { label:'Não Existe',    icon:'❌', cls:'b-red'    },
+  SEM_INTERESSE: { label:'Sem Interesse', icon:'😐', cls:'b-yellow' },
+  DESCARTADO:    { label:'Descartado',    icon:'🗑', cls:'b-gray'   },
+};
+
+const STATE_COLORS = { SC:'sc', PR:'pr', SP:'sp' };
+const STATE_ICONS  = { SC:'🔵', PR:'🟢', SP:'🟠' };
+const STATE_NAMES  = { SC:'Santa Catarina', PR:'Paraná', SP:'São Paulo' };
+
+// ══════════════════════════════════
+//  AUTH
+// ══════════════════════════════════
+function setGreeting() {
+  const h = new Date().getHours();
+  const g = h<12?'🌅 Bom dia!':h<18?'☀️ Boa tarde!':'🌙 Boa noite!';
+  document.getElementById('greeting-text').textContent =
+    `${g} Bem-vindo ao Sistema de Mailing da Gutowski Cobrança Garantida.`;
+}
+setGreeting();
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  if (!email || !pass) return;
+  const btn = document.getElementById('btn-login');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loader"></span>Entrando...';
+  document.getElementById('login-error').style.display = 'none';
+  try {
+    const res = await api('/api/auth/login', 'POST', { email, password: pass }, false);
+    token = res.token;
+    currentUser = res.user;
+    sessionStorage.setItem('gut_token', token);
+    sessionStorage.setItem('gut_user', JSON.stringify(currentUser));
+    showApp();
+  } catch (e) {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('login-error').textContent = e.message || 'Credenciais inválidas';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
+  }
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('user-label').textContent = currentUser.name;
+  loadStats();
+  loadContacts(1);
+  loadImports();
+  buildStateBars();
+}
+
+function doLogout() {
+  sessionStorage.clear();
+  location.reload();
+}
+
+// Auto-login from session
+const savedToken = sessionStorage.getItem('gut_token');
+if (savedToken) {
+  token = savedToken;
+  currentUser = JSON.parse(sessionStorage.getItem('gut_user') || '{}');
+  showApp();
+}
+
+document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('login-email').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('login-pass').focus(); });
+
+// ══════════════════════════════════
+//  API HELPER
+// ══════════════════════════════════
+async function api(path, method='GET', body=null, auth=true) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (auth && token) headers['Authorization'] = `Bearer ${token}`;
+  const opts = { method, headers };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(API_URL + path, opts);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    if (res.status === 401) { sessionStorage.clear(); location.reload(); }
+    throw new Error(data.error || `Erro ${res.status}`);
+  }
+  return data;
+}
+
+async function apiUpload(path, formData) {
+  const res = await fetch(API_URL + path, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` },
+    body: formData,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);
+  return data;
+}
+
+// ══════════════════════════════════
+//  NAV
+// ══════════════════════════════════
+function switchNav(name, btn) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('nav-'+name).classList.add('active');
+  btn.classList.add('active');
+  if (name==='imports') loadImports();
+}
+
+// ══════════════════════════════════
+//  STATE BARS
+// ══════════════════════════════════
+function buildStateBars() {
+  ['dash-state-bar','contacts-state-bar'].forEach((id, idx) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const fn = idx===0 ? 'filterDash' : 'filterContacts';
+    el.innerHTML = `
+      <button class="state-btn all ${currentStateFilter==='all'?'active':''}" onclick="${fn}('all',this)">
+        <span class="sdot" style="background:linear-gradient(135deg,var(--sc),var(--pr))"></span>
+        🌐 Todos <span class="scnt">(${statsCounts.total||'—'})</span>
+      </button>
+      ${['SC','PR','SP'].map(s=>`
+        <button class="state-btn ${STATE_COLORS[s]} ${currentStateFilter===s?'active':''}" onclick="${fn}('${s}',this)">
+          <span class="sdot" style="background:var(--${STATE_COLORS[s]})"></span>
+          ${STATE_ICONS[s]} ${s} <span class="scnt">(${(statsCounts.byEstado||{})[s]||'0'})</span>
+        </button>`).join('')}`;
+  });
+}
+
+function filterDash(state, btn) {
+  currentStateFilter = state;
+  document.querySelectorAll('#dash-state-bar .state-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  loadStats();
+}
+
+function filterContacts(state, btn) {
+  currentStateFilter = state;
+  activeCityTags.clear();
+  document.querySelectorAll('#contacts-state-bar .state-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  loadContacts(1);
+}
+
+// ══════════════════════════════════
+//  STATS / DASHBOARD
+// ══════════════════════════════════
+async function loadStats() {
+  try {
+    const params = currentStateFilter!=='all' ? `?estado=${currentStateFilter}` : '';
+    const data = await api(`/api/contacts/stats${params}`);
+    statsCounts = data;
+    const bs = data.byStatus || {};
+    document.getElementById('s-total').textContent = data.total || 0;
+    document.getElementById('s-bom').textContent   = bs.BOM_LEAD || 0;
+    document.getElementById('s-and').textContent   = bs.EM_ANDAMENTO || 0;
+    document.getElementById('s-conv').textContent  = bs.CONVERTIDO || 0;
+    document.getElementById('s-nex').textContent   = bs.NAO_EXISTE || 0;
+    document.getElementById('s-score').textContent = data.avgScore || 0;
+
+    // Distribution bars
+    const be = data.byEstado || {};
+    const total = Object.values(be).reduce((a,b)=>a+b,0);
+    document.getElementById('dash-dist').innerHTML = total ? `
+      <div style="font-size:14px;font-weight:600;color:var(--text2);margin-bottom:14px">Distribuição por Estado</div>
+      ${['SC','PR','SP'].map(s=>{
+        const cnt = be[s]||0;
+        const pct = total ? Math.round((cnt/total)*100) : 0;
+        const cls = STATE_COLORS[s];
+        return `<div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
+            <span>${STATE_ICONS[s]} ${s} – ${STATE_NAMES[s]}</span>
+            <span style="font-family:var(--mono);color:var(--text2)">${cnt} · ${pct}%</span>
+          </div>
+          <div style="height:5px;background:var(--border2);border-radius:99px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:var(--${cls});border-radius:99px;transition:width .6s"></div>
+          </div>
+        </div>`;
+      }).join('')}` : '';
+    buildStateBars();
+  } catch (e) { console.error(e); }
+}
+
+// ══════════════════════════════════
+//  CONTACTS TABLE
+// ══════════════════════════════════
+let searchValue = '';
+function debounceSearch() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    searchValue = document.getElementById('search-input').value;
+    loadContacts(1);
+  }, 350);
+}
+
+async function loadContacts(page=1) {
+  currentPage = page;
+  const status  = document.getElementById('filter-status')?.value || '';
+  const orderBy = document.getElementById('filter-order')?.value || 'score';
+  const params  = new URLSearchParams({ page, pageSize: 50, orderBy, order: 'desc' });
+  if (currentStateFilter !== 'all') params.set('estado', currentStateFilter);
+  if (status) params.set('status', status);
+  if (searchValue) params.set('search', searchValue);
+
+  try {
+    const data = await api(`/api/contacts?${params}`);
+    renderTable(data.data, data.meta);
+    buildCityTags(data.data);
+  } catch (e) {
+    toast('Erro ao carregar contatos: ' + e.message, 'error');
+  }
+}
+
+function buildCityTags(contacts) {
+  const cities = [...new Set(contacts.map(c=>(c.cidade||'').split('/')[0].trim()).filter(Boolean))].sort();
+  document.getElementById('city-tags').innerHTML = cities.slice(0,14).map(c=>
+    `<button class="tag-btn ${activeCityTags.has(c)?'active':''}" onclick="toggleCityTag('${c}',this)">${c}</button>`
+  ).join('');
+}
+
+function toggleCityTag(city, btn) {
+  if (activeCityTags.has(city)) { activeCityTags.delete(city); btn.classList.remove('active'); }
+  else { activeCityTags.add(city); btn.classList.add('active'); }
+  // filter client-side (city tags are local filter on top of server results)
+  loadContacts(currentPage);
+}
+
+function renderTable(contacts, meta) {
+  const tb = document.getElementById('table-body');
+  if (!contacts.length) {
+    tb.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text3)">Nenhum contato encontrado.</td></tr>`;
+  } else {
+    tb.innerHTML = contacts.map(c => {
+      const st = STATUS_LABELS[c.status] || STATUS_LABELS.PENDENTE;
+      const dotColor = {SC:'var(--sc)',PR:'var(--pr)',SP:'var(--sp)'}[c.estado] || 'var(--text3)';
+      const scoreColor = c.score>=70 ? 'var(--pr)' : c.score<40 ? 'var(--red)' : 'var(--gold)';
+      const scoreBar = `<div class="score-bar"><div class="strack"><div class="sfill" style="width:${c.score}%;background:${scoreColor}"></div></div><span class="snum">${c.score}</span></div>`;
+      const waHref = c.telefone ? `https://wa.me/55${c.telefone.replace(/\D/g,'')}?text=${encodeURIComponent(buildWAMsg(c))}` : '#';
+      const emailHref = c.email ? `mailto:${c.email}?subject=Gutowski+Cobrança+Garantida&body=${encodeURIComponent(buildEmailMsg(c))}` : '#';
+      return `<tr>
+        <td title="${c.nome}" style="font-weight:500">${c.nome||'—'}</td>
+        <td><span style="color:${dotColor};font-weight:700;font-size:12px">${STATE_ICONS[c.estado]||''} ${c.estado}</span></td>
+        <td>${c.tipo?`<span class="badge b-gold">${c.tipo}</span>`:'—'}</td>
+        <td>${c.cidade||'—'}</td>
+        <td style="font-family:var(--mono);font-size:12px">${c.telefone||'—'}</td>
+        <td>${scoreBar}</td>
+        <td><span class="badge ${st.cls}">${st.icon} ${st.label}</span></td>
+        <td>
+          <div class="act-btns">
+            ${c.telefone ? `<button class="act-btn act-wpp" onclick="openWA('${c.id}','${(c.telefone||'').replace(/'/g,'')}','${(c.nome||'').replace(/'/g,'').replace(/"/g,'')}','${c.cidade||''}','${c.tipo||''}')">💬 WPP</button>` : ''}
+            ${c.email    ? `<button class="act-btn act-email" onclick="openEmail('${c.email}','${(c.nome||'').replace(/'/g,'')}')">📧 Email</button>` : ''}
+            <button class="act-btn act-status" onclick="openModal('${c.id}','${(c.nome||'').replace(/'/g,'')}','${c.telefone||''}','${c.status}')">🏷 Status</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Pagination
+  if (meta) {
+    const { total, page, pageSize, pages } = meta;
+    const start = (page-1)*pageSize;
+    document.getElementById('pagination').innerHTML = `
+      <span>${start+1}–${Math.min(start+pageSize,total)} de ${total}</span>
+      <div class="page-btns">
+        <button class="pbtn" onclick="loadContacts(${page-1})" ${page<=1?'disabled':''}>‹</button>
+        ${Array.from({length:Math.min(pages,7)},(_,i)=>{
+          const p=i+1;
+          return `<button class="pbtn ${p===page?'active':''}" onclick="loadContacts(${p})">${p}</button>`;
+        }).join('')}
+        ${pages>7?`<span style="color:var(--text3);font-size:11px">…${pages}</span>`:''}
+        <button class="pbtn" onclick="loadContacts(${page+1})" ${page>=pages?'disabled':''}>›</button>
+      </div>`;
+  }
+}
+
+// ══════════════════════════════════
+//  ACTIONS — WPP / EMAIL
+// ══════════════════════════════════
+function buildWAMsg(c) {
+  return `Olá, bom dia! 😊\n\nSou da *Gutowski Cobrança Garantida*, especialista em redução de inadimplência condominial.\n\nIdentificamos que ${c.nome||'seu condomínio'} pode se beneficiar do nosso modelo de *garantia de receita* — onde o condomínio recebe em dia, independente da inadimplência.\n\nPodemos conversar rapidamente? 🙏`;
+}
+
+function buildEmailMsg(c) {
+  return `Olá,\n\nSou da Gutowski Cobrança Garantida, empresa especializada em redução de inadimplência condominial em SC, PR e SP.\n\nGostaríamos de apresentar nossa solução de garantia de receita para ${c.nome||'seu condomínio'}.\n\nPodemos agendar uma conversa rápida?\n\nAtenciosamente,\nEquipe Gutowski`;
+}
+
+function openWA(id, phone, nome, cidade, tipo) {
+  const msg = buildWAMsg({ nome, cidade, tipo });
+  const url = `https://wa.me/55${phone.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+  // auto-atualiza para EM_ANDAMENTO se ainda PENDENTE
+  updateStatusSilent(id, 'EM_ANDAMENTO', 'WhatsApp enviado');
+}
+
+function openEmail(email, nome) {
+  const msg = buildEmailMsg({ nome });
+  const url = `mailto:${email}?subject=Gutowski+Cobrança+Garantida&body=${encodeURIComponent(msg)}`;
+  window.location.href = url;
+  updateStatusSilent(id, 'EM_ANDAMENTO', 'Email enviado');
+}
+
+async function updateStatusSilent(id, status, note) {
+  try {
+    await api(`/api/contacts/${id}/status`, 'PATCH', { status, note });
+    loadStats();
+  } catch {}
+}
+
+// ══════════════════════════════════
+//  STATUS MODAL
+// ══════════════════════════════════
+async function openModal(id, nome, phone, currentStatus) {
+  modalContactId = id;
+  selectedStatus = null;
+  document.getElementById('modal-contact-name').textContent = nome;
+  document.getElementById('modal-contact-sub').textContent = `📞 ${phone||'sem telefone'}`;
+  document.getElementById('modal-note').value = '';
+  // reset selections
+  document.querySelectorAll('.status-opt').forEach(b => {
+    b.classList.remove('selected');
+    if (b.dataset.status === currentStatus) b.classList.add('selected');
+    selectedStatus = currentStatus;
+  });
+  document.getElementById('status-modal').classList.add('open');
+
+  // load history
+  document.getElementById('modal-history').innerHTML = '<div style="color:var(--text3);font-size:12px">Carregando...</div>';
+  try {
+    const { data } = await api(`/api/contacts/${id}/history`);
+    document.getElementById('modal-history').innerHTML = data.length
+      ? data.map(h => `
+        <div class="history-item">
+          <div class="history-dot"></div>
+          <div>
+            <div>${STATUS_LABELS[h.newStatus]?.icon||''} <strong>${STATUS_LABELS[h.newStatus]?.label||h.newStatus}</strong>${h.note ? ` — ${h.note}` : ''}</div>
+            <div class="history-meta">${h.user?.name||'—'} · ${new Date(h.createdAt).toLocaleString('pt-BR')}</div>
+          </div>
+        </div>`).join('')
+      : '<div style="color:var(--text3);font-size:12px">Nenhuma atualização ainda.</div>';
+  } catch {}
+}
+
+function closeModal() {
+  document.getElementById('status-modal').classList.remove('open');
+}
+
+function selectStatus(btn) {
+  document.querySelectorAll('.status-opt').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedStatus = btn.dataset.status;
+}
+
+async function saveStatus() {
+  if (!selectedStatus || !modalContactId) return;
+  const note = document.getElementById('modal-note').value.trim();
+  const btn = document.getElementById('btn-save-status');
+  btn.disabled = true;
+  try {
+    await api(`/api/contacts/${modalContactId}/status`, 'PATCH', { status: selectedStatus, note });
+    toast('Status atualizado!', 'success');
+    closeModal();
+    loadContacts(currentPage);
+    loadStats();
+  } catch (e) {
+    toast('Erro: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+document.getElementById('status-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// ══════════════════════════════════
+//  UPLOAD
+// ══════════════════════════════════
+let filesToUpload = [];
+
+function handleDragOver(e) { e.preventDefault(); document.getElementById('upload-zone').classList.add('drag-over'); }
+function handleDragLeave()  { document.getElementById('upload-zone').classList.remove('drag-over'); }
+function handleDrop(e)      { e.preventDefault(); document.getElementById('upload-zone').classList.remove('drag-over'); addFiles([...e.dataTransfer.files]); }
+function handleFileSelect(e){ addFiles([...e.target.files]); }
+
+function addFiles(files) {
+  const ok = files.filter(f => f.name.match(/\.(csv|txt)$/i));
+  if (ok.length !== files.length) toast('Apenas CSV e TXT.', 'error');
+  ok.forEach(f => { if (!filesToUpload.find(x=>x.name===f.name)) filesToUpload.push(f); });
+  renderFilesList();
+}
+
+function removeFile(i) { filesToUpload.splice(i,1); renderFilesList(); }
+
+function renderFilesList() {
+  const list = document.getElementById('files-list');
+  const btn  = document.getElementById('btn-upload');
+  if (!filesToUpload.length) { list.innerHTML=''; btn.disabled=true; return; }
+  list.innerHTML = filesToUpload.map((f,i) => `
+    <div class="file-item" id="fitem-${i}">
+      <div class="file-item-left">
+        <span style="font-size:20px">${f.name.endsWith('.csv')?'📋':'📄'}</span>
+        <div><div class="fname">${f.name}</div><div class="fmeta">${(f.size/1024).toFixed(1)} KB</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="fstatus pending" id="fstatus-${i}">Aguardando</span>
+        <button onclick="removeFile(${i})" style="background:transparent;border:none;color:var(--text3);cursor:pointer">✕</button>
+      </div>
+    </div>`).join('');
+  btn.disabled = false;
+}
+
+async function uploadFiles() {
+  if (!filesToUpload.length) return;
+  const estado = document.getElementById('import-state').value;
+  const btn = document.getElementById('btn-upload');
+  btn.disabled = true;
+  document.getElementById('prog-wrap').style.display = 'block';
+
+  const steps = [
+    { id:'p1', label:`Enviando arquivos para o servidor...` },
+    { id:'p2', label:'Processando e higienizando no backend...' },
+    { id:'p3', label:'Detectando duplicatas contra o banco...' },
+    { id:'p4', label:'Salvando contatos no PostgreSQL...' },
+  ];
+  document.getElementById('prog-steps').innerHTML = steps.map(s =>
+    `<div class="prog-step waiting" id="${s.id}"><span class="sicon">⏳</span><span>${s.label}</span></div>`
+  ).join('');
+
+  async function step(id, delay, fn) {
+    const el = document.getElementById(id);
+    el.className='prog-step running';
+    el.querySelector('.sicon').innerHTML='<span class="spinning">⚙️</span>';
+    await sleep(delay); await fn();
+    el.className='prog-step done';
+    el.querySelector('.sicon').textContent='✅';
+  }
+
+  await step('p1', 200, async () => {});
+
+  let totalImported = 0, totalValid = 0, totalDups = 0;
+
+  for (let i = 0; i < filesToUpload.length; i++) {
+    const f = filesToUpload[i];
+    const el = document.getElementById(`fstatus-${i}`);
+    el.className='fstatus loading'; el.textContent='Enviando...';
+    try {
+      const fd = new FormData();
+      fd.append('file', f);
+      fd.append('estado', estado);
+      const res = await apiUpload('/api/imports', fd);
+      el.className='fstatus ok'; el.textContent=`✅ ${res.total} linhas`;
+      totalImported += res.total;
+      totalValid    += res.valid;
+      totalDups     += res.duplicates;
+    } catch(e) {
+      el.className='fstatus error'; el.textContent='❌ Erro';
+      toast(`Erro em ${f.name}: ${e.message}`, 'error');
+    }
+  }
+
+  await step('p2', 300, async () => {});
+  await step('p3', 300, async () => {});
+  await step('p4', 200, async () => {});
+
+  toast(`✅ ${totalImported} contatos importados · ${totalValid} válidos · ${totalDups} duplicados`, 'success');
+  filesToUpload = [];
+  renderFilesList();
+  document.getElementById('prog-wrap').style.display = 'none';
+  btn.disabled = false;
+  loadStats();
+  loadContacts(1);
+  loadImports();
+
+  // switch to contacts
+  await sleep(800);
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab')[1].classList.add('active');
+  document.getElementById('nav-contacts').classList.add('active');
+}
+
+// ══════════════════════════════════
+//  IMPORT HISTORY
+// ══════════════════════════════════
+async function loadImports() {
+  try {
+    const { data } = await api('/api/imports');
+    const el = document.getElementById('imports-list');
+    if (!data.length) {
+      el.innerHTML = '<div class="empty-state"><div class="eicon">📁</div><p>Nenhuma importação ainda.</p></div>';
+      return;
+    }
+    el.innerHTML = data.map(imp => {
+      const stColor = {SC:'var(--sc)',PR:'var(--pr)',SP:'var(--sp)'}[imp.estado]||'var(--gold)';
+      return `<div class="import-item">
+        <div class="import-info">
+          <div class="import-name">📋 ${imp.filename}</div>
+          <div class="import-meta">${new Date(imp.createdAt).toLocaleString('pt-BR')} · por ${imp.user?.name||'—'}</div>
+        </div>
+        <div class="import-stats">
+          <span style="color:${stColor};font-weight:700;font-size:12px">${STATE_ICONS[imp.estado]||''} ${imp.estado}</span>
+          <span class="badge b-gold">${imp.totalRows} total</span>
+          <span class="badge b-green">${imp.validRows} válidos</span>
+          <span class="badge b-red">${imp.dupRows} dups</span>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (e) { toast('Erro ao carregar importações.', 'error'); }
+}
+
+// ══════════════════════════════════
+//  UTILS
+// ══════════════════════════════════
+function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
+function toast(msg, type='success') {
+  const c = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(()=>el.remove(), 5000);
+}
+</script>
+</body>
+</html>

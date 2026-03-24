@@ -1,0 +1,108 @@
+// Gutowski Mailing System — Prisma Schema
+// Banco: PostgreSQL no Render
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Usuários do sistema ───────────────────────
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(OPERATOR)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Atividades deste usuário
+  contactUpdates ContactUpdate[]
+  imports        Import[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  OPERATOR
+}
+
+// ─── Importações ──────────────────────────────
+model Import {
+  id         String    @id @default(cuid())
+  filename   String
+  estado     String    // SC | PR | SP
+  totalRows  Int
+  validRows  Int
+  dupRows    Int
+  createdAt  DateTime  @default(now())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  contacts   Contact[]
+
+  @@map("imports")
+}
+
+// ─── Contatos ─────────────────────────────────
+model Contact {
+  id        String        @id @default(cuid())
+  nome      String
+  tipo      String?
+  cidade    String?
+  estado    String        // SC | PR | SP
+  telefone  String?
+  email     String?
+  fonte     String?
+  score     Int           @default(0)
+  status    ContactStatus @default(PENDENTE)
+  obs       String?
+  origem    String?       // nome do arquivo
+
+  // duplicata
+  isDuplicate Boolean @default(false)
+  duplicateOf String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  importId  String
+  import    Import  @relation(fields: [importId], references: [id])
+
+  updates   ContactUpdate[]
+
+  @@index([estado])
+  @@index([status])
+  @@index([score])
+  @@map("contacts")
+}
+
+enum ContactStatus {
+  PENDENTE      // ainda não qualificado
+  BOM_LEAD      // contato de qualidade, prioridade alta
+  EM_ANDAMENTO  // já foi contactado, negociação em curso
+  CONVERTIDO    // fechou / virou cliente
+  NAO_EXISTE    // número/email inválido
+  SEM_INTERESSE // contactado mas não tem interesse
+  DESCARTADO    // remover da lista
+}
+
+// ─── Histórico de atualizações ────────────────
+model ContactUpdate {
+  id        String        @id @default(cuid())
+  contactId String
+  contact   Contact       @relation(fields: [contactId], references: [id])
+  userId    String
+  user      User          @relation(fields: [userId], references: [id])
+  oldStatus ContactStatus?
+  newStatus ContactStatus
+  note      String?
+  createdAt DateTime      @default(now())
+
+  @@map("contact_updates")
+}
